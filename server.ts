@@ -481,7 +481,14 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
 // API: Conversational Agent Endpoint with 4-Stage Flow
 app.post("/api/chat", async (req, res) => {
   try {
-    const { messages = [], partyDetails = {}, userMessage = "", forceGeneratePlan = false, currentStage = "define" } = req.body;
+    const { 
+      messages = [], 
+      partyDetails = {}, 
+      userMessage = "", 
+      forceGeneratePlan = false, 
+      currentStage = "define",
+      currentPlan = null 
+    } = req.body;
     const gemini = getGeminiClient();
 
     // Extract updated details from user message locally as base / fallback
@@ -547,14 +554,14 @@ app.post("/api/chat", async (req, res) => {
 
     // Check user intent for Stage 3 Refine or Stage 4 Finalize
     const isCheckoutOrFinalize = text.includes("finalize") || text.includes("checkout") || text.includes("ready to order") || text.includes("confirm order") || text.includes("done");
-    const isRefineRequest = text.includes("reduce cost") || text.includes("cheaper") || text.includes("add item") || text.includes("remove item") || text.includes("replace") || text.includes("change theme") || text.includes("change guest") || text.includes("change budget") || text.includes("more guests") || text.includes("less guests") || text.includes("trim budget") || text.includes("increase budget");
+    const isRefineRequest = text.includes("reduce cost") || text.includes("cheaper") || text.includes("add item") || text.includes("remove item") || text.includes("replace") || text.includes("change theme") || text.includes("change guest") || text.includes("change budget") || text.includes("more guests") || text.includes("less guests") || text.includes("trim budget") || text.includes("increase budget") || text.includes("add ") || text.includes("remove ") || text.includes("change quantity") || text.includes("quantity");
 
     // Local Fallback if Gemini is unavailable
     if (!gemini) {
       console.log("Using smart local 4-stage agent engine");
 
-      if (isCheckoutOrFinalize && (updatedDetails.guestCount || forceGeneratePlan)) {
-        const plan = generateFallbackShoppingPlan(updatedDetails, userMessage);
+      if (isCheckoutOrFinalize && (updatedDetails.guestCount || forceGeneratePlan || currentPlan)) {
+        const plan = currentPlan || generateFallbackShoppingPlan(updatedDetails, userMessage);
         return res.json({
           replyText: `🎉 **Stage 4: Finalize & Checkout**\n\nHere is your final concise shopping plan for **${plan.partySummary.guestCount} guests** with an estimated total of **$${plan.estimatedTotal.toFixed(2)}** ($${plan.costPerGuest.toFixed(2)} per guest).\n\n• Food (${plan.items.filter((i: any) => i.category === 'Food').length} items)\n• Drinks (${plan.items.filter((i: any) => i.category === 'Drinks').length} items)\n• Decorations (${plan.items.filter((i: any) => i.category === 'Decorations').length} items)\n• Tableware (${plan.items.filter((i: any) => i.category === 'Tableware').length} items)\n• Party supplies (${plan.items.filter((i: any) => i.category === 'Party supplies').length} items)\n• Optional extras (${plan.items.filter((i: any) => i.category === 'Optional extras').length} items)\n\nAll items are mapped directly to CymbalMart aisles for fast curbside pickup or store trip!`,
           extractedDetails: updatedDetails,
@@ -562,6 +569,70 @@ app.post("/api/chat", async (req, res) => {
           stage: "finalize",
           shoppingPlan: plan,
           quickReplies: ["Open Finalize & Checkout", "Review In-Store Mode", "Change guest count", "Adjust budget"]
+        });
+      }
+
+      // If we have an existing plan and user requested modification in Stage 3
+      if (currentPlan && isRefineRequest) {
+        let modifiedItems = [...currentPlan.items];
+        let modificationNote = "I've updated your shopping plan!";
+
+        if (text.includes("remove") || text.includes("delete")) {
+          const words = text.replace(/remove|delete|the|from|list/g, "").trim();
+          modifiedItems = modifiedItems.filter(i => !i.name.toLowerCase().includes(words) && !words.includes(i.name.toLowerCase()));
+          modificationNote = `Removed matching items from your shopping plan and recalculated your estimated total and remaining budget.`;
+        } else if (text.includes("add")) {
+          const newItemName = userMessage.replace(/^.*?add\s+/i, "").trim() || "Custom Party Item";
+          modifiedItems.push({
+            id: `custom-${Date.now()}`,
+            name: newItemName,
+            category: "Food",
+            quantityDescription: "1 pack",
+            unitPrice: 5.99,
+            estimatedPrice: 5.99,
+            isEssential: true,
+            isEnabled: true,
+            isChecked: false,
+            cymbalMartAisle: "Aisle 1 - Grocery",
+            themeRelevance: "Customer custom addition"
+          });
+          modificationNote = `Added "${newItemName}" to your shopping plan and updated all subtotals and budget comparisons.`;
+        } else if (text.includes("reduce") || text.includes("cheaper") || text.includes("trim")) {
+          modifiedItems = modifiedItems.map(i => (!i.isEssential ? { ...i, isEnabled: false } : i));
+          modificationNote = `Trimmed optional extras to reduce your total and save budget.`;
+        }
+
+        const activeItems = modifiedItems.filter(i => i.isEnabled !== false);
+        const essentialsTotal = activeItems
+          .filter(i => i.isEssential)
+          .reduce((sum, i) => sum + (i.estimatedPrice || 0), 0);
+        const optionalsTotal = activeItems
+          .filter(i => !i.isEssential)
+          .reduce((sum, i) => sum + (i.estimatedPrice || 0), 0);
+        const estimatedTotal = Number((essentialsTotal + optionalsTotal).toFixed(2));
+        const budget = updatedDetails.budget || currentPlan.budget || 150;
+        const guests = updatedDetails.guestCount || currentPlan.partySummary.guestCount || 12;
+        const remainingBudget = Number((budget - estimatedTotal).toFixed(2));
+
+        const updatedPlan = {
+          ...currentPlan,
+          partySummary: { ...currentPlan.partySummary, ...updatedDetails },
+          items: modifiedItems,
+          essentialsTotal: Number(essentialsTotal.toFixed(2)),
+          optionalsTotal: Number(optionalsTotal.toFixed(2)),
+          estimatedTotal,
+          budget,
+          remainingBudget,
+          costPerGuest: Number((estimatedTotal / guests).toFixed(2))
+        };
+
+        return res.json({
+          replyText: `📋 **Stage 3: Refine**\n\n${modificationNote}\n\n• **New Total**: $${estimatedTotal.toFixed(2)}\n• **Budget**: $${budget} (${remainingBudget >= 0 ? `$${remainingBudget.toFixed(2)} under budget` : `$${Math.abs(remainingBudget).toFixed(2)} over budget`})\n• **Active items**: ${activeItems.length}`,
+          extractedDetails: updatedDetails,
+          missingFields: [],
+          stage: "refine",
+          shoppingPlan: updatedPlan,
+          quickReplies: ["💰 Reduce cost further", "➕ Add another item", "🔄 Replace item", "🛒 Finalize & Checkout"]
         });
       }
 
@@ -659,17 +730,25 @@ FOR EVERY ITEM INCLUDE:
 
 Calculate estimatedTotal (sum of all items), essentialsTotal, optionalsTotal, remainingBudget, and costPerGuest.
 
---- STAGE 3: REFINE ---
+--- STAGE 3: REFINE & MODIFY ---
 Prompt the customer explicitly on whether they want to:
 - Reduce the cost
 - Add items
 - Remove items
-- Replace items
+- Change an item's quantity
+- Replace an item with another item
 - Change the theme
 - Change the guest count
 - Change the budget
 
-After every change requested by the user, recalculate the shopping list, portions, and estimated total immediately!
+CRITICAL RULE FOR STAGE 3:
+- Whenever the shopping list is modified:
+  * Update the quantities
+  * Recalculate item subtotals (quantity * unitPrice)
+  * Recalculate the estimated total
+  * Compare the new total with the customer's budget
+  * Show the remaining budget or amount over budget
+- Keep all other party requirements and existing unmodified items unchanged unless the customer explicitly asks to change them!
 
 --- STAGE 4: FINALIZE ---
 When user is satisfied or asks to checkout/finalize, provide a final concise shopping list and estimated total suitable for checkout with store pickup / delivery details.
@@ -684,7 +763,8 @@ STYLE GUIDELINES:
       currentPartyDetails: partyDetails,
       latestUserMessage: userMessage,
       forceGeneratePlan,
-      currentStage
+      currentStage,
+      existingShoppingPlan: currentPlan
     };
 
     const response = await gemini.models.generateContent({

@@ -97,7 +97,8 @@ export default function App() {
           partyDetails,
           userMessage: text,
           forceGeneratePlan: forcePlan,
-          currentStage: workflowStage
+          currentStage: workflowStage,
+          currentPlan: currentPlan
         })
       });
 

@@ -11,6 +11,7 @@ import {
   Copy, 
   Printer, 
   Plus, 
+  Minus,
   Trash2, 
   Filter, 
   CheckCircle, 
@@ -29,7 +30,8 @@ import {
   MapPin,
   Utensils,
   Wine,
-  Sparkle
+  Sparkle,
+  Edit3
 } from 'lucide-react';
 import { ShoppingPlan, ShoppingItem, PartyDetails } from '../types';
 import { ReplaceItemModal } from './ReplaceItemModal';
@@ -54,6 +56,81 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
   const [copiedNotification, setCopiedNotification] = useState<boolean>(false);
   const [itemToReplace, setItemToReplace] = useState<ShoppingItem | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
+
+  // Extract quantity number and unit label
+  const extractQuantityInfo = (item: ShoppingItem): { count: number; unitLabel: string } => {
+    const match = item.quantityDescription.match(/^(\d+(\.\d+)?)\s*(.*)$/);
+    if (match) {
+      return { count: parseFloat(match[1]) || 1, unitLabel: match[3] || 'units' };
+    }
+    return { count: 1, unitLabel: item.quantityDescription || 'unit' };
+  };
+
+  // Change item quantity via stepper (+1 / -1)
+  const handleQuantityStep = (id: string, delta: number) => {
+    const updatedItems = plan.items.map(item => {
+      if (item.id === id) {
+        const { count, unitLabel } = extractQuantityInfo(item);
+        const newCount = Math.max(1, Math.round((count + delta) * 10) / 10);
+        if (newCount === count) return item;
+
+        const effectiveUnitPrice = item.unitPrice > 0 
+          ? item.unitPrice 
+          : (count > 0 ? Number((item.estimatedPrice / count).toFixed(2)) : item.estimatedPrice);
+        
+        const newEstimatedPrice = Number((effectiveUnitPrice * newCount).toFixed(2));
+
+        let newDesc = item.quantityDescription;
+        const leadingNumMatch = item.quantityDescription.match(/^(\d+(\.\d+)?)/);
+        if (leadingNumMatch) {
+          newDesc = item.quantityDescription.replace(/^(\d+(\.\d+)?)/, `${newCount}`);
+        } else {
+          newDesc = `${newCount} ${item.quantityDescription}`;
+        }
+
+        return {
+          ...item,
+          unitPrice: effectiveUnitPrice,
+          quantityDescription: newDesc,
+          estimatedPrice: newEstimatedPrice
+        };
+      }
+      return item;
+    });
+    recalculatePlan(updatedItems);
+  };
+
+  // Set exact quantity directly
+  const handleSetExactQuantity = (id: string, newCount: number) => {
+    if (isNaN(newCount) || newCount < 1) return;
+    const updatedItems = plan.items.map(item => {
+      if (item.id === id) {
+        const { count } = extractQuantityInfo(item);
+        const effectiveUnitPrice = item.unitPrice > 0 
+          ? item.unitPrice 
+          : (count > 0 ? Number((item.estimatedPrice / count).toFixed(2)) : item.estimatedPrice);
+
+        const newEstimatedPrice = Number((effectiveUnitPrice * newCount).toFixed(2));
+
+        let newDesc = item.quantityDescription;
+        const leadingNumMatch = item.quantityDescription.match(/^(\d+(\.\d+)?)/);
+        if (leadingNumMatch) {
+          newDesc = item.quantityDescription.replace(/^(\d+(\.\d+)?)/, `${newCount}`);
+        } else {
+          newDesc = `${newCount} ${item.quantityDescription}`;
+        }
+
+        return {
+          ...item,
+          unitPrice: effectiveUnitPrice,
+          quantityDescription: newDesc,
+          estimatedPrice: newEstimatedPrice
+        };
+      }
+      return item;
+    });
+    recalculatePlan(updatedItems);
+  };
 
   // Toggle item enabled state
   const toggleItemEnabled = (id: string) => {
@@ -692,16 +769,40 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
                                 )}
                               </div>
 
-                              {/* Quantity & Unit Price Calculation */}
-                              <div className="text-xs text-stone-600 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                                <span className="font-semibold text-amber-900 bg-amber-50/80 px-2 py-0.5 rounded-md border border-amber-200/60 text-2xs">
-                                  Qty: {item.quantityDescription}
-                                </span>
+                              {/* Quantity Stepper & Unit Price Calculation */}
+                              <div className="text-xs text-stone-600 flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                {/* Interactive Quantity Stepper */}
+                                <div className="inline-flex items-center rounded-lg bg-amber-50/90 border border-amber-200/80 p-0.5 shadow-2xs">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleQuantityStep(item.id, -1)}
+                                    className="w-5 h-5 rounded flex items-center justify-center bg-white hover:bg-amber-100 text-stone-700 hover:text-amber-950 font-bold border border-amber-200/60 active:scale-95 transition-all shadow-2xs disabled:opacity-40"
+                                    title="Decrease quantity by 1"
+                                    disabled={extractQuantityInfo(item).count <= 1}
+                                  >
+                                    <Minus className="w-3 h-3 stroke-[2.5]" />
+                                  </button>
+
+                                  <span className="px-2 font-bold font-mono-num text-amber-950 text-2xs">
+                                    {item.quantityDescription}
+                                  </span>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => handleQuantityStep(item.id, 1)}
+                                    className="w-5 h-5 rounded flex items-center justify-center bg-white hover:bg-amber-100 text-stone-700 hover:text-amber-950 font-bold border border-amber-200/60 active:scale-95 transition-all shadow-2xs"
+                                    title="Increase quantity by 1"
+                                  >
+                                    <Plus className="w-3 h-3 stroke-[2.5]" />
+                                  </button>
+                                </div>
+
                                 {item.unitPrice && (
-                                  <span className="text-2xs font-mono-num text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded">
+                                  <span className="text-2xs font-mono-num text-stone-500 bg-stone-100 px-2 py-0.5 rounded border border-stone-200/60">
                                     ${item.unitPrice.toFixed(2)} / unit
                                   </span>
                                 )}
+
                                 {item.themeRelevance && (
                                   <span className="text-stone-500 italic text-2xs">
                                     • {item.themeRelevance}
