@@ -62,6 +62,30 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
                            promptText.includes("team building") || 
                            promptText.includes("team-building");
 
+  const isWedding = partyType.toLowerCase().includes("wedding") || 
+                    partyType.toLowerCase().includes("reception") || 
+                    partyType.toLowerCase().includes("matrimony") || 
+                    partyType.toLowerCase().includes("bridal") || 
+                    promptText.includes("wedding") || 
+                    promptText.includes("reception") || 
+                    promptText.includes("bridal");
+
+  const isGardenOutdoor = theme.toLowerCase().includes("garden") || 
+                          theme.toLowerCase().includes("outdoor") || 
+                          theme.toLowerCase().includes("botanical") || 
+                          theme.toLowerCase().includes("rustic") || 
+                          theme.toLowerCase().includes("patio") || 
+                          theme.toLowerCase().includes("lawn") || 
+                          partyType.toLowerCase().includes("outdoor") || 
+                          partyType.toLowerCase().includes("garden") || 
+                          promptText.includes("garden") || 
+                          promptText.includes("outdoor") || 
+                          promptText.includes("backyard") || 
+                          promptText.includes("patio") || 
+                          promptText.includes("lawn");
+
+  const isOutdoorWedding = isWedding && (isGardenOutdoor || true);
+
   const isBBQ = partyType.toLowerCase().includes("bbq") || theme.toLowerCase().includes("bbq") || theme.toLowerCase().includes("cookout");
   const isCocktail = partyType.toLowerCase().includes("cocktail") || partyType.toLowerCase().includes("tapas") || partyType.toLowerCase().includes("soiree");
 
@@ -736,7 +760,473 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
     });
 
   // ==========================================
-  // CASE 3: BBQ / COOKOUT
+  // CASE 3: OUTDOOR GARDEN WEDDING RECEPTION
+  // ==========================================
+  } else if (isOutdoorWedding) {
+    // 1. Food (Gourmet catering, grazing board, garden salad, wedding cake)
+    const entreePlatters = Math.ceil(guests / 8);
+    const entreePrice = 28.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Cymbal Executive Gourmet Herb-Crusted Roasted Chicken & Salmon Entree Platter with Roasted Vegetables",
+      category: "Food",
+      quantityDescription: `${entreePlatters} catering platters (serves ${guests} guests)`,
+      unitPrice: entreePrice,
+      estimatedPrice: Number((entreePlatters * entreePrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Gourmet plated-style catering entree for garden wedding dinner",
+      dietaryNote: isGF ? "Naturally Gluten-Free, contains fish/poultry" : "Gourmet herb seasoning",
+      cymbalMartAisle: "Aisle 1 - Prepared Catering Deli",
+      notes: "Calculated 1 generous entree portion per guest"
+    });
+
+    const grazingBoards = Math.ceil(guests / 10);
+    const grazingPrice = 19.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Cymbal Artisan Charcuterie, Fine Cheeses & Fresh Fruit Reception Grazing Display",
+      category: "Food",
+      quantityDescription: `${grazingBoards} grazing boards (${grazingBoards * 10} guest capacity)`,
+      unitPrice: grazingPrice,
+      estimatedPrice: Number((grazingBoards * grazingPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Cocktail hour grazing display for arriving wedding guests",
+      dietaryNote: isNutFree ? "Nut-free crackers & cheeses" : "Imported cheeses, cured meats, grapes & artisan crackers",
+      cymbalMartAisle: "Aisle 1 - Gourmet Deli Showcase",
+      notes: "Pre-arranged aesthetic wooden board presentation"
+    });
+
+    const saladBowls = Math.ceil(guests / 12);
+    const saladPrice = 11.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Cymbal Fresh Garden Botanical Salad with Strawberries, Candied Pecans & Citrus Vinaigrette (4 lbs)",
+      category: "Food",
+      quantityDescription: `${saladBowls} large bowls (${saladBowls * 4} lbs salad)`,
+      unitPrice: saladPrice,
+      estimatedPrice: Number((saladBowls * saladPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Crisp garden-fresh salad pairing for outdoor reception",
+      dietaryNote: isVeg ? "100% Vegetarian / Vegan (dressings separate)" : "Vegetarian & Gluten-Free",
+      cymbalMartAisle: "Aisle 1 - Produce Department",
+      notes: "Includes baby arugula, spinach, berries & dressing"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Cymbal Bakery 3-Tier Elegant Wedding Celebration Cake (White Velvet & Berry Coulis)",
+      category: "Food",
+      quantityDescription: "1 three-tier celebration cake (serves up to 30 guests)",
+      unitPrice: 34.99,
+      estimatedPrice: 34.99,
+      isEssential: true,
+      themeRelevance: "Centerpiece ceremonial wedding cake cutting",
+      dietaryNote: "Artisan bakery creation (contains dairy, egg, wheat)",
+      cymbalMartAisle: "Aisle 3 - Bakery Showcase",
+      notes: "Includes delicate white floral piping"
+    });
+
+    // 2. Drinks (Sparkling toast, chilled infused botanical water, sparkling waters, ice)
+    const toastPacks = Math.ceil(guests / 6);
+    const toastPrice = 13.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Cymbal Reserve Sparkling White Grape Celebration Bubbly & Champagne Toast (750ml, 4-pk)",
+      category: "Drinks",
+      quantityDescription: `${toastPacks} four-packs (${toastPacks * 4} toast bottles for ${guests} guests)`,
+      unitPrice: toastPrice,
+      estimatedPrice: Number((toastPacks * toastPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Celebratory sparkling toast for the couple and wedding guests",
+      dietaryNote: "Non-Alcoholic, Gluten-Free, Vegan",
+      cymbalMartAisle: "Aisle 7 - Specialty Beverages",
+      notes: "Calculated 1-2 full toast flutes per guest"
+    });
+
+    const dispenserSets = Math.max(1, Math.ceil(guests / 20));
+    const dispenserPrice = 12.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Chilled Botanical Infused Citrus, Cucumber & Fresh Mint Water Station (2 Gal Glass Dispenser + Herbs)",
+      category: "Drinks",
+      quantityDescription: `${dispenserSets} drink station kits (${dispenserSets * 2} gallons)`,
+      unitPrice: dispenserPrice,
+      estimatedPrice: Number((dispenserSets * dispenserPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Spa-grade refreshing botanical lawn hydration for warm weather",
+      dietaryNote: "Zero Calorie, All-Natural Infused Hydration",
+      cymbalMartAisle: "Aisle 7 - Beverage Stations & Produce",
+      notes: "Includes 2-gallon glass drink dispenser with spigot, sliced citrus & organic mint"
+    });
+
+    const waterPacks = Math.ceil((guests * 2) / 12);
+    const waterPrice = 5.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Cymbal Reserve Sparkling Flavored Mineral Water Variety 12-pk (Perrier & San Pellegrino Style)",
+      category: "Drinks",
+      quantityDescription: `${waterPacks} twelve-packs (${waterPacks * 12} chilled cans)`,
+      unitPrice: waterPrice,
+      estimatedPrice: Number((waterPacks * waterPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Upscale zero-sugar hydration for outdoor dining",
+      dietaryNote: "Calorie-Free, Gluten-Free",
+      cymbalMartAisle: "Aisle 7 - Premium Waters",
+      notes: "Budgeted 2 cans per guest"
+    });
+
+    const iceBags = Math.max(2, Math.ceil(guests / 8));
+    const icePrice = 2.49;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Cymbal Pure Filtered Party Ice (10 lb bag)",
+      category: "Drinks",
+      quantityDescription: `${iceBags} bags (${iceBags * 10} lbs)`,
+      unitPrice: icePrice,
+      estimatedPrice: Number((iceBags * icePrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Chilling toast bottles, infused water dispensers, and cans",
+      dietaryNote: "Pure triple-filtered water ice",
+      cymbalMartAisle: "Front Entry - Ice Freezers",
+      notes: "Keeps outdoor beverages frosty throughout the event"
+    });
+
+    // 3. Decorations (Suitable for Garden Setting & Outdoor Lighting)
+    const tableCount = Math.max(2, Math.ceil(guests / 6));
+    const garlandPacks = Math.ceil(tableCount / 2);
+    const garlandPrice = 14.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Lush Faux Eucalyptus & White Rose Botanical Greenery Table Runners (6 ft Garlands, 2-pk)",
+      category: "Decorations",
+      quantityDescription: `${garlandPacks} packs (${garlandPacks * 2} x 6-foot lush runners for ${tableCount} tables)`,
+      unitPrice: garlandPrice,
+      estimatedPrice: Number((garlandPacks * garlandPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Botanical garden greenery runners for banquet and sweetheart tables",
+      dietaryNote: "High-grade UV-resistant botanical silk",
+      cymbalMartAisle: "Aisle 8 - Floral & Garden Decor",
+      notes: "Centerpiece greenery runner for 6-ft dining tables"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Garden Wedding Ceremony & Reception Arbor Arch Drape Kit with Sheer Chiffon & Florals",
+      category: "Decorations",
+      quantityDescription: "1 complete wedding arbor drape kit",
+      unitPrice: 16.99,
+      estimatedPrice: 16.99,
+      isEssential: true,
+      themeRelevance: "Garden focal point for vows, photo backdrop, and sweetheart table canopy",
+      dietaryNote: "Decorative Chiffon & Silk Fabric",
+      cymbalMartAisle: "Aisle 8 - Wedding & Ceremony Decor",
+      notes: "Includes sheer draping panels and floral attachment clips"
+    });
+
+    const lightPacks = Math.max(1, Math.ceil(guests / 16));
+    const lightPrice = 14.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Warm White Weatherproof Outdoor LED Bistro String Fairy Lights (50 ft Shatterproof Bulbs)",
+      category: "Decorations",
+      quantityDescription: `${lightPacks} string light sets (${lightPacks * 50} ft total length)`,
+      unitPrice: lightPrice,
+      estimatedPrice: Number((lightPacks * lightPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Romantic golden-hour and evening ambient canopy lighting",
+      dietaryNote: "UL-listed outdoor weatherproof LED",
+      cymbalMartAisle: "Aisle 8 - Outdoor Lighting & Seasonal",
+      notes: "Shatterproof commercial-grade vintage Edison/fairy globes"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Solar Garden Pathway Lanterns & Shepherd Ground Hook Stakes (8-Pack Dusk-to-Dawn)",
+      category: "Decorations",
+      quantityDescription: "1 pack (8 solar walkway stake lights)",
+      unitPrice: 15.99,
+      estimatedPrice: 15.99,
+      isEssential: true,
+      themeRelevance: "Illuminates garden pathways and lawn perimeters safely after sunset",
+      dietaryNote: "Solar powered, auto-on at dusk",
+      cymbalMartAisle: "Aisle 8 - Garden Hardware & Lighting",
+      notes: "Stake into grass along entryway and restroom pathways"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Warm Flickering Flameless LED Votive Tealight Candles for Centerpieces (24-ct)",
+      category: "Decorations",
+      quantityDescription: "1 box (24 LED candles with batteries included)",
+      unitPrice: 8.99,
+      estimatedPrice: 8.99,
+      isEssential: true,
+      themeRelevance: "Wind-resistant soft glowing candlelight for outdoor dinner tables",
+      dietaryNote: "Flameless safety LED",
+      cymbalMartAisle: "Aisle 8 - Party Decor & Lighting",
+      notes: "Safe for outdoor breezes (won't blow out or pose fire hazard)"
+    });
+
+    // 4. Tableware (Tables, White Linens, Gold-Rimmed Plates, Toasting Flutes, Heavyweight Cutlery)
+    const tableclothPacks = Math.ceil(tableCount / 2);
+    const tableclothPrice = 9.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Crisp White Heavyweight Linen-Feel Tablecloth Covers (108 x 54 in, 2-pk)",
+      category: "Tableware",
+      quantityDescription: `${tableclothPacks} packs (${tableclothPacks * 2} tablecloths for ${tableCount} tables)`,
+      unitPrice: tableclothPrice,
+      estimatedPrice: Number((tableclothPacks * tableclothPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Classic white wedding drape for banquet and buffet tables",
+      dietaryNote: "Spill-resistant embossed cloth-like paper",
+      cymbalMartAisle: "Aisle 8 - Table Linens & Party Supplies",
+      notes: "Fits standard 6-ft rectangular banquet tables"
+    });
+
+    const platePacks = Math.ceil((guests * 1.5) / 30);
+    const platePrice = 11.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Cymbal Deluxe Gold-Rimmed Eco-Luxe Compostable Dinner & Dessert Plates Duo (30 Dinner + 30 Cake)",
+      category: "Tableware",
+      quantityDescription: `${platePacks} combo packs (${platePacks * 30} dinner & dessert plate sets)`,
+      unitPrice: platePrice,
+      estimatedPrice: Number((platePacks * platePrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Elegant gold-trimmed dining presentation for garden reception",
+      dietaryNote: "Heavyweight biodegradable sugarcane fiber with gold foil trim",
+      cymbalMartAisle: "Aisle 8 - Premium Tableware",
+      notes: "Handles heavy entrees and wedding cake slices without bending"
+    });
+
+    const flutePacks = Math.ceil(guests / 20);
+    const flutePrice = 8.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Crystal-Clear Shatterproof Stemmed Champagne & Wine Toasting Flutes 6 oz (24-ct)",
+      category: "Tableware",
+      quantityDescription: `${flutePacks} packs (${flutePacks * 24} toast flutes)`,
+      unitPrice: flutePrice,
+      estimatedPrice: Number((flutePacks * flutePrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Shatterproof lawn-safe stemmed flutes for celebratory toasts",
+      dietaryNote: "BPA-Free recyclable clear crystal plastic",
+      cymbalMartAisle: "Aisle 8 - Party Glassware",
+      notes: "Lawn-safe: eliminates broken glass hazard on outdoor grass"
+    });
+
+    const napkinPacks = Math.ceil((guests * 2.5) / 50);
+    const napkinPrice = 4.49;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Cymbal Heavyweight Linen-Feel Dinner Napkins (Crisp White, 50-ct)",
+      category: "Tableware",
+      quantityDescription: `${napkinPacks} packs (${napkinPacks * 50} napkins)`,
+      unitPrice: napkinPrice,
+      estimatedPrice: Number((napkinPacks * napkinPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Soft, absorbent banquet place setting napkins",
+      dietaryNote: "100% compostable fiber",
+      cymbalMartAisle: "Aisle 8 - Paper & Tableware",
+      notes: "Calculated 2-3 napkins per guest"
+    });
+
+    const cutleryPacks = Math.ceil(guests / 16);
+    const cutleryPrice = 5.49;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Cymbal Elegant Gold-Finished Plant-Based Heavyweight Cutlery Set (Forks, Knives, Spoons 24-pk)",
+      category: "Tableware",
+      quantityDescription: `${cutleryPacks} boxes (${cutleryPacks * 24} place settings)`,
+      unitPrice: cutleryPrice,
+      estimatedPrice: Number((cutleryPacks * cutleryPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Polished metallic gold finish matching garden reception styling",
+      dietaryNote: "Plant-based heavyweight compostable resin",
+      cymbalMartAisle: "Aisle 8 - Premium Cutlery",
+      notes: "Full dining cutlery for entree and cake"
+    });
+
+    // 5. Party Supplies (Outdoor Seating, Banquet Tables, Weather Canopies, Bug Repellent, Cleanup)
+    const chairSets = Math.ceil(guests / 4);
+    const chairPrice = 24.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Classic White Resin Padded Folding Wedding Guest Chairs (Set of 4 Heavy-Duty Chairs)",
+      category: "Party supplies",
+      quantityDescription: `${chairSets} sets of 4 (${chairSets * 4} chairs for ${guests} guests)`,
+      unitPrice: chairPrice,
+      estimatedPrice: Number((chairSets * chairPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Essential outdoor seating for ceremony and reception dining",
+      dietaryNote: "Heavy-duty 300 lb weight capacity, weather-resistant resin",
+      cymbalMartAisle: "Aisle 8 - Event Furniture & Seating",
+      notes: "Padded vinyl seat cushion for long outdoor comfort"
+    });
+
+    const tablePrice = 29.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Heavy-Duty 6-Foot Folding Banquet Dining Tables (Seats 6-8 Guests)",
+      category: "Party supplies",
+      quantityDescription: `${tableCount} banquet tables (${tableCount * 6} seat capacity)`,
+      unitPrice: tablePrice,
+      estimatedPrice: Number((tableCount * tablePrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Main dining, buffet, and beverage station tables for outdoor layout",
+      dietaryNote: "Weatherproof high-density polyethylene top",
+      cymbalMartAisle: "Aisle 8 - Event Furniture",
+      notes: "Sturdy steel frame for level outdoor lawn placement"
+    });
+
+    const tentCount = Math.max(1, Math.ceil(guests / 20));
+    const tentPrice = 49.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Weatherproof Pop-Up Event Canopy Tent with UV Sun Shade & Sidewalls (10x20 ft)",
+      category: "Party supplies",
+      quantityDescription: `${tentCount} event canopies (10x20 ft UV-protective shelter)`,
+      unitPrice: tentPrice,
+      estimatedPrice: Number((tentCount * tentPrice).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Essential weather protection for shade against sun and sudden drizzle",
+      dietaryNote: "UPF 50+ UV protection & waterproof polyester canopy",
+      cymbalMartAisle: "Aisle 8 - Outdoor Canopies & Tents",
+      notes: "Includes ground stakes and tie-down ropes for lawn installation"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Heavy-Duty Canopy Sandbag Anchor Weight Bags & Lawn Stakes Kit (4-pk)",
+      category: "Party supplies",
+      quantityDescription: `${tentCount} anchor weight kits (4 sandbag anchors per tent)`,
+      unitPrice: 11.99,
+      estimatedPrice: Number((tentCount * 11.99).toFixed(2)),
+      isEssential: true,
+      themeRelevance: "Wind stabilization and ground safety for canopy tents on outdoor lawns",
+      dietaryNote: "Heavy-duty Oxford fabric",
+      cymbalMartAisle: "Aisle 8 - Hardware & Canopy Accessories",
+      notes: "Prevents canopy lifting in sudden outdoor gusts"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "All-Natural Botanical Mosquito & Insect Repellent Mist Spray (Deet-Free Plant Oils, 2-pk)",
+      category: "Party supplies",
+      quantityDescription: "1 two-pack (16 oz total spray)",
+      unitPrice: 7.49,
+      estimatedPrice: 7.49,
+      isEssential: true,
+      themeRelevance: "Keeps garden lawn mosquitoes and flies away from guests and dining tables",
+      dietaryNote: "Deet-Free, plant-based essential oils (lemongrass & cedarwood)",
+      cymbalMartAisle: "Aisle 8 - Garden & Pest Control",
+      notes: "Place at guest comfort station and patio perimeter"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Outdoor Citronella Garden Tabletop Votive Candles in Glass Holders (4-pk)",
+      category: "Party supplies",
+      quantityDescription: "1 four-pack",
+      unitPrice: 6.49,
+      estimatedPrice: 6.49,
+      isEssential: true,
+      themeRelevance: "Dual-purpose mosquito repellent and warm ambient glow for reception tables",
+      dietaryNote: "Natural citronella wax",
+      cymbalMartAisle: "Aisle 8 - Outdoor Candles & Pest Control",
+      notes: "Place around buffet line and cocktail tables"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Discreet Heavy-Duty Drawstring Wedding Cleanup Bags & Pop-Up Recycling Bins (20 bags + 2 bins)",
+      category: "Party supplies",
+      quantityDescription: "1 wedding cleanup station kit",
+      unitPrice: 7.99,
+      estimatedPrice: 7.99,
+      isEssential: true,
+      themeRelevance: "Discreet waste and recycling management for outdoor lawn venues",
+      dietaryNote: "Recycled plastic & collapsible bins",
+      cymbalMartAisle: "Aisle 8 - Cleaning & Trash",
+      notes: "Place discreetly behind catering station"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Emergency Table Spill Kit & Microfiber Quick-Dry Clean Cloths (4-pack)",
+      category: "Party supplies",
+      quantityDescription: "1 emergency spill kit",
+      unitPrice: 4.49,
+      estimatedPrice: 4.49,
+      isEssential: true,
+      themeRelevance: "Rapid table spill cleanup without staining table linens",
+      dietaryNote: "Reusable microfiber",
+      cymbalMartAisle: "Aisle 8 - Cleaning Supplies",
+      notes: "Keep near bar and buffet station"
+    });
+
+    // 6. Optional Extras (Guest comfort fans, patio umbrella, extension cords, rose petals)
+    const fanPacks = Math.ceil(guests / 12);
+    const fanPrice = 9.99;
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Outdoor Guest Comfort Sunshine Station (Bamboo Hand Fans 12-ct + Broad Spectrum SPF 50 Sunscreen Mist)",
+      category: "Optional extras",
+      quantityDescription: `${fanPacks} comfort packs (${fanPacks * 12} bamboo fans + sunscreen mist)`,
+      unitPrice: fanPrice,
+      estimatedPrice: Number((fanPacks * fanPrice).toFixed(2)),
+      isEssential: false,
+      themeRelevance: "Thoughtful guest comfort favors for warm outdoor sunshine and afternoon breeze",
+      dietaryNote: "Eco-friendly natural bamboo & mineral sunscreen",
+      cymbalMartAisle: "Aisle 8 - Seasonal & Guest Amenities",
+      notes: "Display in a basket at welcome table"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Freestanding Garden Patio Shade Umbrella with Weighted Base (9 ft Tilt Canopy)",
+      category: "Optional extras",
+      quantityDescription: "1 shade umbrella set",
+      unitPrice: 24.99,
+      estimatedPrice: 24.99,
+      isEssential: false,
+      themeRelevance: "Additional targeted shade for cocktail bar and dessert station",
+      dietaryNote: "UV-resistant polyester with steel tilt pole",
+      cymbalMartAisle: "Aisle 8 - Patio & Seasonal Furniture",
+      notes: "Optional: provides focused shade for cake table"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Heavy-Duty Weatherproof 3-Prong Outdoor Extension Cord (50 ft) & Ground Cord Covers",
+      category: "Optional extras",
+      quantityDescription: "1 outdoor power cord kit",
+      unitPrice: 11.99,
+      estimatedPrice: 11.99,
+      isEssential: false,
+      themeRelevance: "Powers outdoor bistro fairy lights and sound equipment safely across grass",
+      dietaryNote: "UL-listed outdoor weatherproof cord",
+      cymbalMartAisle: "Aisle 8 - Hardware & Electrical",
+      notes: "Low-profile safety cord cover prevents guest tripping"
+    });
+
+    items.push({
+      id: `item-${idCounter++}`,
+      name: "Fresh Fragrant White Rose Petal Tabletop & Lawn Scattering Pack (1,000 Petals)",
+      category: "Optional extras",
+      quantityDescription: "1 box (1,000 real rose petals)",
+      unitPrice: 7.99,
+      estimatedPrice: 7.99,
+      isEssential: false,
+      themeRelevance: "Romantic floral sprinkle for sweetheart table, cake display, and ceremony walkway",
+      dietaryNote: "100% natural biodegradable real rose petals",
+      cymbalMartAisle: "Floral Department",
+      notes: "Sprinkle lightly along tables and pathway"
+    });
+
+  // ==========================================
+  // CASE 4: BBQ / COOKOUT
   // ==========================================
   } else if (isBBQ) {
     const burgerPacks = Math.ceil(guests / 6);
@@ -1274,30 +1764,45 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
     },
     items: items.map(it => ({ ...it, isEnabled: true, isChecked: false })),
     assumptions: [
-      isKidsParty 
+      isOutdoorWedding
+        ? `Outdoor Wedding Baseline: Scaled for ${guests} guests with white resin seating, banquet dining tables, canopy weather shelter, and elegant catering.`
+        : isKidsParty 
         ? `Children's Party Baseline: Scaled for ${guests} kids with child-safe portions, spill-resistant drinks, and age-appropriate supplies.`
         : isCorporateEvent
         ? `Corporate Workshop Baseline: Scaled for ${guests} professional attendees with catering wraps, cold brew bar, and team collaboration supplies.`
         : `Guest baseline: planned for ${guests} guests for an estimated 3 to 4 hour gathering.`,
-      isKidsParty 
+      isOutdoorWedding
+        ? `Drinks allocation: Sparkling white grape/champagne celebration toast flutes, infused botanical iced water dispenser station, and mineral waters.`
+        : isKidsParty 
         ? `Drinks allocation: 100% kid-friendly juice pouches and mini water bottles (strictly non-alcoholic).`
         : isCorporateEvent
         ? `Drinks allocation: Cold brew coffee bar station, artisan teas, and sparkling flavored mineral waters.`
         : `Drinks allocation: budgeted ~2 to 3 seltzers/juices per guest plus ice for drink chilling.`,
-      isKidsParty 
+      isOutdoorWedding
+        ? `Food portions: Gourmet herb roasted entree catering platters, reception charcuterie grazing display, garden salad, and 3-tier wedding cake.`
+        : isKidsParty 
         ? `Food portions: Kid-sized portions including mini pizza bites, baked chicken tenders, cut seedless fruit, and celebration cupcakes.`
         : isCorporateEvent
         ? `Food portions: 1.5 artisan wrap halves per person, executive cheese & fruit boards, and afternoon macarons.`
         : `Food portions: scaled 1.5 main portions per person plus fresh fruit, snacks, and cupcakes.`,
-      `Tableware ratios: included ample plates, cups, and napkins tailored to the event archetype.`,
+      isOutdoorWedding
+        ? `Outdoor Infrastructure: Equipped with 10x20 ft canopy weather shelter, sandbag anchor weights, LED bistro fairy lighting, solar pathway lanterns, botanical insect repellent, and guest comfort fans.`
+        : `Tableware ratios: included ample plates, cups, and napkins tailored to the event archetype.`,
       dietary.includes("Nut Allergy") 
         ? "Nut Allergy accommodation: selected 100% nut-free bakery facility items and labeled snacks."
         : dietary.includes("Gluten-Free") 
         ? "Dietary accommodation: included dedicated certified Gluten-Free items to prevent cross-contact." 
         : "Balanced variety across savory, sweet, and hydration.",
-      `Budget reconciliation: total estimated at $${estimatedTotal} against your $${budget} budget (${remainingBudget >= 0 ? `$${remainingBudget.toFixed(2)} surplus remaining` : `$${Math.abs(remainingBudget).toFixed(2)} over target — optional extras can be toggled off to save $${optionalsTotal.toFixed(2)}`}).`
+      `Budget reconciliation: total estimated at ${estimatedTotal} against your ${budget} budget (${remainingBudget >= 0 ? `${remainingBudget.toFixed(2)} surplus remaining` : `${Math.abs(remainingBudget).toFixed(2)} over target — optional extras can be toggled off to save ${optionalsTotal.toFixed(2)}`}).`
     ],
-    themeHighlights: isKidsParty
+    themeHighlights: isOutdoorWedding
+      ? [
+          "Botanical eucalyptus & white rose greenery table runners, wedding arch drape kit, and rose petals.",
+          "Weatherproof pop-up canopy tent with UV sun shade, sandbag anchors, and white resin guest seating.",
+          "Warm white bistro fairy string lights, solar walkway lanterns, and flameless LED candle centerpieces.",
+          "Plant-based mosquito/insect repellent, citronella garden votives, and guest bamboo hand fan comfort station."
+        ]
+      : isKidsParty
       ? [
           isSuperheroTheme ? "Superhero comic action banner, masks, and emblem cupcakes." : "Bright, joyful child-friendly decorations & colorful cupcakes.",
           "Child-safe tableware, spill-proof juice pouches, and sticky-finger cleansing wipes.",
@@ -1321,7 +1826,14 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
           isNutFree ? "Nut-safe bakery cupcakes and allergen-labeled snacks." : null,
         ].filter(Boolean) as string[]
       : ["All items are standard supermarket favorites with clear ingredient labeling."],
-    proTips: isKidsParty
+    proTips: isOutdoorWedding
+      ? [
+          "Secure the pop-up canopy tent with sandbag weights and lawn stakes immediately upon setup to guard against sudden outdoor gusts.",
+          "Set up the botanical insect repellent spray and bamboo hand fan comfort station near the guest welcome entrance.",
+          "Turn on the solar pathway lights and string bistro fairy lights 30 minutes before sunset for a seamless transition into evening.",
+          "Keep the multi-tier wedding cake in a shaded, cool area under the canopy until ceremony cake-cutting time."
+        ]
+      : isKidsParty
       ? [
           "Pre-portion cupcakes and juice pouches on the side table before singing happy birthday to prevent spills.",
           "Keep wet wipes directly on the dining table for instant cleanup after finger foods and cupcakes.",
@@ -1611,6 +2123,22 @@ When party type is a Corporate Team Building Event or workplace gathering:
 - STRICT PROHIBITION: AVOID children's-party or overly casual/noisy items (NO party noisemakers, NO party blowers, NO confetti cannons, NO kiddie juice boxes, NO cartoon characters).
 - Maintain strict budget adherence and realistic supermarket catering pricing.
 
+[C. OUTDOOR WEDDING RECEPTIONS (GARDEN / OUTDOOR THEME)]
+When party type is a Wedding Reception (or Wedding) and theme is Garden/Outdoor (or Botanical, Rustic Garden, Outdoor Lawn):
+- Adapt all recommendations specifically for an ELEGANT OUTDOOR GARDEN EVENT.
+- Essential Outdoor Requirements to include:
+  1. Outdoor Seating: Classic white resin padded folding wedding guest chairs or weather-resistant garden chairs scaled to guest count (4-pack sets, e.g. Math.ceil(guests / 4)).
+  2. Tables and Tableware: Heavy-duty 6-ft banquet dining tables (Math.ceil(guests / 6)), crisp white heavyweight linen-feel tablecloth covers (108x54 in), deluxe gold-rimmed eco-luxe compostable dinner & dessert plates, crystal-clear shatterproof stemmed champagne/wine toasting flutes, heavyweight linen-feel dinner napkins, and polished gold-finished heavyweight cutlery.
+  3. Weather Protection: Weatherproof pop-up event canopy tent with UPF 50+ UV sun shade & sidewalls (10x20 ft or 10x10 ft shelter), heavy-duty canopy sandbag anchor weights & lawn stakes kit to prevent wind displacement, and optional freestanding garden patio shade umbrellas.
+  4. Outdoor Lighting: Weatherproof warm white outdoor LED bistro fairy string lights (50 ft commercial-grade shatterproof bulbs), solar garden pathway lanterns with shepherd ground hook stakes for safe walkway navigation after dusk, and wind-resistant warm flickering flameless LED votive tealight candles for table centerpieces.
+  5. Garden Decorations: Lush botanical faux eucalyptus & white rose greenery table runners/garlands (6 ft runners), garden ceremony/reception arbor arch drape kit with sheer chiffon fabric & florals, fresh rose petals for table scattering, and vintage framed welcome chalkboard easel signs.
+  6. Food and Beverage: Gourmet catering entrees (e.g. herb-crusted roasted chicken & salmon platters with roasted vegetables), artisan charcuterie, fine cheeses & fresh fruit reception grazing displays, crisp garden botanical salads with berries, 3-tier celebration wedding cake, non-alcoholic / celebratory sparkling white grape bubbly for champagne toasts, chilled botanical infused citrus-cucumber-mint water dispenser stations, and pure filtered party ice bags.
+  7. Waste Disposal & Cleanup Supplies: Discreet heavy-duty drawstring wedding cleanup trash bags, collapsible pop-up lawn recycling bins, and emergency table spill kits with microfiber quick-dry cloths.
+  8. Other Practical Outdoor Supplies: All-natural botanical mosquito & insect repellent mist spray (deet-free plant oils), outdoor citronella garden tabletop votive candles, guest comfort sunshine station (bamboo hand fans & SPF 50 sunscreen mist), and weatherproof outdoor extension cords.
+- Scale Quantities Accurately: Calculate portions, seating, tables, plates, flutes, and beverage dispensers strictly based on the number of guests.
+- Prioritize Essential Outdoor Requirements: Mark foundational infrastructure (seating, tables, canopy, dinnerware, lighting, catering, trash cleanup, bug repellent) as 'isEssential': true, while designating optional comfort amenities (extra fans, patio umbrella, extension cords) as 'isEssential': false.
+- Budget Alignment: Keep total recommendations aligned with the customer's budget with realistic supermarket/party pricing.
+
 FOR EVERY ITEM INCLUDE:
 - name: Specific item name with CymbalMart brand or supermarket name
 - category: Exactly one of "Food", "Drinks", "Decorations", "Tableware", "Party supplies", "Optional extras"
@@ -1855,8 +2383,18 @@ app.post("/api/generate-plan", async (req, res) => {
 
     const systemInstruction = `You are the CymbalMart Party Planner Shopping Agent.
 Generate a structured, practical, budget-conscious CymbalMart party shopping list matching the customer's party details.
-Scale quantities accurately to the guest count. Group by categories. Prioritize essential items ('isEssential': true) over optional items ('isEssential': false).
+Scale quantities accurately to the guest count. Group by categories: Food, Drinks, Decorations, Tableware, Party supplies, Optional extras. Prioritize essential items ('isEssential': true) over optional items ('isEssential': false).
 Include explicit mathematical assumptions, dietary accommodations, and theme elements.
+
+For Outdoor Wedding Receptions (Garden / Outdoor theme):
+- Outdoor Seating: Include white resin padded folding chairs scaled to guest count.
+- Tables and Tableware: Banquet dining tables, crisp white tablecloths, gold-rimmed plates, stemmed champagne toast flutes, linen-feel napkins, gold cutlery.
+- Weather Protection: Pop-up canopy event tent with UV sun protection, sandbag anchor weights/stakes, and patio shade umbrellas.
+- Outdoor Lighting: Warm white LED bistro fairy string lights, solar pathway lanterns with shepherd hooks, flameless LED tealights.
+- Garden Setting Decor: Botanical eucalyptus & white rose table garlands, wedding arbor arch drape kit, rose petals, chalkboard welcome sign.
+- Food & Beverage: Gourmet entree catering platters, charcuterie grazing boards, fresh botanical salads, multi-tier wedding cake, celebratory sparkling bubbly toasts, infused citrus-mint water station, filtered ice.
+- Waste Disposal & Cleanup: Discreet drawstring wedding trash bags, collapsible lawn recycling bins, emergency spill kit.
+- Practical Outdoor Supplies: Botanical mosquito/insect repellent spray, outdoor citronella candles, guest comfort sunshine station (bamboo hand fans, SPF 50 sunscreen mist), outdoor extension cords.
 `;
 
     const response = await gemini.models.generateContent({

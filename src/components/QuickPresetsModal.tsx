@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Sparkles, Flame, Shield, Gamepad2, GlassWater, Briefcase, Users, DollarSign, ArrowRight } from 'lucide-react';
+import { X, Sparkles, Flame, Shield, Gamepad2, GlassWater, Briefcase, Heart, Palmtree, Users, DollarSign, ArrowRight } from 'lucide-react';
 import { PARTY_PRESETS } from '../data/presets';
 import { QuickTheme } from '../types';
 
@@ -14,6 +14,8 @@ export const QuickPresetsModal: React.FC<QuickPresetsModalProps> = ({
 }) => {
   const getIcon = (iconName: string) => {
     switch (iconName) {
+      case 'Heart': return <Heart className="w-5 h-5 text-rose-500" />;
+      case 'Palmtree': return <Palmtree className="w-5 h-5 text-emerald-500" />;
       case 'Briefcase': return <Briefcase className="w-5 h-5 text-indigo-500" />;
       case 'Flame': return <Flame className="w-5 h-5 text-amber-500" />;
       case 'Shield': return <Shield className="w-5 h-5 text-blue-500" />;

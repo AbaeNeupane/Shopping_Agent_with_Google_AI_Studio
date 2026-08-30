@@ -2,6 +2,17 @@ import { QuickTheme } from '../types';
 
 export const PARTY_PRESETS: QuickTheme[] = [
   {
+    name: "Outdoor Garden Wedding Reception",
+    type: "Wedding Reception",
+    description: "Botanical eucalyptus garlands, bistro fairy lights, canopy weather protection, white resin guest seating, banquet tables, gourmet catering, sparkling toast flutes, and guest comfort amenities.",
+    defaultGuests: 24,
+    defaultBudget: 450,
+    iconName: "Heart",
+    suggestedTheme: "Garden / Outdoor Botanical",
+    dietarySuggestions: ["Gluten-Free", "Vegetarian"],
+    specialRequests: "Pop-up canopy tent for shade, warm string lighting, white resin chairs, champagne flutes, botanical bug repellent, and bamboo hand fans"
+  },
+  {
     name: "Kids Superhero Birthday Bash",
     type: "Children's Birthday Party",
     description: "Child-friendly mini pizza bites, bakery superhero cupcakes, organic juice pouches, fresh fruit skewers, superhero cape/mask favors, and action hero decor.",
@@ -81,6 +92,7 @@ export const COMMON_DIETARY_OPTIONS = [
 ];
 
 export const COMMON_PARTY_TYPES = [
+  "Wedding Reception",
   "Children's Birthday Party",
   "Corporate Team Building Event",
   "Birthday Party",
@@ -92,6 +104,7 @@ export const COMMON_PARTY_TYPES = [
 ];
 
 export const COMMON_THEMES = [
+  "Garden / Outdoor Botanical",
   "Superhero Comic Adventure",
   "Professional Innovation & Strategy",
   "Tropical Luau",
