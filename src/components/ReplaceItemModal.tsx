@@ -20,37 +20,32 @@ interface ReplaceItemModalProps {
 
 // Smart replacement suggestions by category
 const SUGGESTIONS_BY_CATEGORY: Record<string, Array<{ name: string; quantity: string; priceDiff: number; notes: string; aisle: string; dietary?: string }>> = {
-  "Mains & Proteins": [
+  "Food": [
     { name: "Cymbal Organic Free-Range Chicken Breast (Family Pack)", quantity: "3 lbs (scaled for guests)", priceDiff: -2.50, notes: "Leaner high-protein alternative", aisle: "Aisle 1 - Meat & Poultry", dietary: "Gluten-Free, High Protein" },
     { name: "Cymbal Plant-Based Gourmet Grill Sausages (8-ct)", quantity: "2 packs (16 links)", priceDiff: 1.00, notes: "Great vegan / vegetarian crowd option", aisle: "Aisle 1 - Plant-Based Cooler", dietary: "Certified Vegan" },
     { name: "Cymbal Signature All-Beef Hot Dogs & Bratwurst Combo", quantity: "2 packs (16 links)", priceDiff: -4.00, notes: "Budget-friendly classic cookout staple", aisle: "Aisle 1 - Deli Meats", dietary: "Gluten-Free" },
     { name: "Cymbal Fresh Wild-Caught Salmon Fillet Skewers", quantity: "12 skewers", priceDiff: 6.50, notes: "Premium upscale dinner option", aisle: "Aisle 1 - Fresh Seafood", dietary: "Pescatarian, Keto" }
   ],
-  "Fresh Produce": [
-    { name: "Cymbal Organic Veggie Crudité Platter with Ranch & Hummus", quantity: "2 party platters (3 lbs total)", priceDiff: 1.50, notes: "Crisp broccoli, carrots, peppers & dip", aisle: "Aisle 1 - Produce Deli", dietary: "Vegetarian, Gluten-Free" },
-    { name: "Cymbal Fresh Rainbow Berry Medley (Strawberries, Blueberries, Blackberries)", quantity: "3 lbs clamshells", priceDiff: 2.00, notes: "Vibrant sweet antioxidant mix", aisle: "Aisle 1 - Fresh Berries", dietary: "Vegan, Gluten-Free" },
-    { name: "Cymbal Crisp Romaine & Mediterranean Caesar Salad Kit", quantity: "2 family bags", priceDiff: -3.00, notes: "Includes croutons, parmesan & dressing", aisle: "Aisle 1 - Packaged Salads", dietary: "Vegetarian" }
-  ],
-  "Beverages & Bar": [
+  "Drinks": [
     { name: "Cymbal Craft Citrus & Mint Artisan Mocktail Mixer (64 oz)", quantity: "2 jugs", priceDiff: 2.00, notes: "Alcohol-free upscale signature beverage", aisle: "Aisle 7 - Specialty Beverages", dietary: "Non-Alcoholic, Vegan" },
     { name: "Cymbal Sparkling Zero-Calorie Flavored Water (24-pk)", quantity: "1 mega case (24 cans)", priceDiff: -1.50, notes: "Cost-effective crisp hydration", aisle: "Aisle 7 - Sparkling Water", dietary: "Zero Sugar" },
     { name: "Cymbal 100% Pure Cold-Pressed Apple Cider (1 Gallon)", quantity: "1 gallon", priceDiff: 0.50, notes: "Comforting seasonal refresher", aisle: "Aisle 7 - Chilled Juices", dietary: "Gluten-Free, Vegan" },
     { name: "Cymbal Cold Brew Coffee Concentrate Party Jug (64 oz)", quantity: "1 jug", priceDiff: 3.50, notes: "Perfect energy boost for day parties", aisle: "Aisle 7 - Chilled Coffee", dietary: "Dairy-Free" }
   ],
-  "Snacks & Appetizers": [
-    { name: "Cymbal White Truffle & Sea Salt Kettle Cooked Chips", quantity: "2 party bags (14 oz)", priceDiff: 1.20, notes: "Gourmet crunchy upgrade", aisle: "Aisle 5 - Gourmet Snacks", dietary: "Gluten-Free, Vegan" },
-    { name: "Cymbal Mediterranean Dip Trio (Tzatziki, Red Pepper & Roasted Garlic Hummus)", quantity: "1 large sampler tray", priceDiff: 2.50, notes: "Pairs with pita and chips", aisle: "Aisle 2 - Deli Counter", dietary: "Vegetarian" },
-    { name: "Cymbal Salted Soft Pretzel Bites with Warm Cheddar Dip", quantity: "1 party tub (30 bites)", priceDiff: 0.80, notes: "Warm savory finger food", aisle: "Aisle 3 - Bakery Showcase", dietary: "Vegetarian" }
-  ],
-  "Party Supplies & Tableware": [
-    { name: "Cymbal Premium Bamboo Compostable Plates & Cutlery Kit", quantity: "1 complete pack (50-ct)", priceDiff: 3.00, notes: "Ultra-sturdy natural wooden aesthetic", aisle: "Aisle 8 - Eco Party Goods", dietary: "100% Biodegradable" },
+  "Decorations": [
     { name: "Cymbal Festive Metallic Gold / Silver Party Table Set", quantity: "1 bundle (plates, cups, napkins)", priceDiff: 1.50, notes: "Shiny celebratory theme upgrade", aisle: "Aisle 8 - Party Supplies", dietary: "Food Safe" },
+    { name: "Cymbal Biodegradable Helium Balloon Arch Kit", quantity: "1 complete kit (60 balloons)", priceDiff: 3.00, notes: "Eye-catching photo backdrop", aisle: "Aisle 8 - Party Decorations", dietary: "Eco-Friendly" }
+  ],
+  "Tableware": [
+    { name: "Cymbal Premium Bamboo Compostable Plates & Cutlery Kit", quantity: "1 complete pack (50-ct)", priceDiff: 3.00, notes: "Ultra-sturdy natural wooden aesthetic", aisle: "Aisle 8 - Eco Party Goods", dietary: "100% Biodegradable" },
     { name: "Cymbal Clear Heavy-Duty Reusable Tumblers (30-pk)", quantity: "1 pack (30 cups)", priceDiff: 0.50, notes: "Resistant to cracks and spills", aisle: "Aisle 8 - Cups & Barware", dietary: "BPA-Free" }
   ],
-  "Desserts & Sweets": [
+  "Party supplies": [
+    { name: "Cymbal Multi-Game Lawn & Yard Party Pack", quantity: "1 set", priceDiff: 5.00, notes: "Outdoor games bundle", aisle: "Aisle 8 - Seasonal Housewares", dietary: "All Ages" }
+  ],
+  "Optional extras": [
     { name: "Cymbal Bakery Mini Gourmet French Macarons (24-ct Assorted)", quantity: "1 celebration platter", priceDiff: 4.50, notes: "Pistachio, Raspberry, Chocolate & Salted Caramel", aisle: "Aisle 3 - Bakery Showcase", dietary: "Gluten-Free, Contains Almonds" },
-    { name: "Cymbal Fresh Chocolate Chip & Oat Cookie Platter (24-ct)", quantity: "1 tub (24 warm-style cookies)", priceDiff: -2.00, notes: "Affordable crowd favorite", aisle: "Aisle 3 - Bakery Tables", dietary: "Vegetarian" },
-    { name: "Cymbal All-Natural Gluten-Free Fudgy Brownie Bites (18-ct)", quantity: "1 tub (18 pieces)", priceDiff: 1.00, notes: "Decadent rich chocolate treat", aisle: "Aisle 3 - Specialty Bakery", dietary: "Certified Gluten-Free" }
+    { name: "Cymbal Fresh Chocolate Chip & Oat Cookie Platter (24-ct)", quantity: "1 tub (24 warm-style cookies)", priceDiff: -2.00, notes: "Affordable crowd favorite", aisle: "Aisle 3 - Bakery Tables", dietary: "Vegetarian" }
   ]
 };
 
@@ -60,7 +55,6 @@ export const ReplaceItemModal: React.FC<ReplaceItemModalProps> = ({
   onClose,
   onReplace,
 }) => {
-  const [selectedSuggestion, setSelectedSuggestion] = useState<number | null>(null);
   const [isCustomMode, setIsCustomMode] = useState(false);
   
   const [customName, setCustomName] = useState('');
@@ -114,241 +108,194 @@ export const ReplaceItemModal: React.FC<ReplaceItemModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 bg-stone-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-stone-200/90 overflow-hidden animate-in fade-in zoom-in-95 max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="bg-slate-900 text-white p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-stone-900 via-stone-900 to-amber-950 text-white p-5 sm:px-6 border-b border-stone-800 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
-              <ArrowLeftRight className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-xl bg-amber-400 text-stone-950 flex items-center justify-center shadow-md">
+              <ArrowLeftRight className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm sm:text-base text-slate-100">Replace Product</h3>
-              <p className="text-2xs text-slate-400">Swap item with recommended alternatives or enter a custom substitute</p>
+              <h3 className="font-bold text-base text-stone-100 font-serif-luxury">Product Alternative</h3>
+              <p className="text-2xs text-stone-300">Swap with recommended store brands, dietary alternatives, or custom items</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Current Item Overview */}
-        <div className="p-4 sm:px-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">
+        {/* Current Item Banner */}
+        <div className="p-4 bg-[#FAF9F6] border-b border-stone-200 flex items-center justify-between">
           <div>
-            <div className="text-3xs uppercase tracking-wider font-bold text-slate-400">Currently Selected Item</div>
-            <div className="font-bold text-sm text-slate-900 mt-0.5">{item.name}</div>
-            <div className="text-slate-500">{item.quantityDescription} • {item.cymbalMartAisle}</div>
+            <div className="text-3xs uppercase tracking-widest font-bold text-stone-400">Current Selection</div>
+            <div className="font-bold text-xs sm:text-sm text-stone-900">{item.name}</div>
+            <div className="text-2xs text-stone-500">{item.quantityDescription} • {item.category}</div>
           </div>
           <div className="text-right">
-            <div className="text-3xs uppercase tracking-wider font-bold text-slate-400">Current Price</div>
-            <div className="text-sm font-bold font-mono text-slate-900">${item.estimatedPrice.toFixed(2)}</div>
-            <span className={`inline-block mt-0.5 px-1.5 py-0.2 rounded text-3xs font-bold ${
-              item.isEssential ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-200 text-slate-700'
-            }`}>
-              {item.isEssential ? 'Essential' : 'Optional'}
-            </span>
+            <div className="font-bold font-mono-num text-sm text-stone-900">${item.estimatedPrice.toFixed(2)}</div>
+            <div className="text-3xs text-stone-400">{item.isEssential ? 'Essential' : 'Optional'}</div>
           </div>
         </div>
 
-        {/* Tabs: Suggested Alternatives vs Custom Input */}
-        <div className="flex border-b border-slate-200 bg-slate-100/60 p-1.5 text-xs font-semibold">
+        {/* Tabs: Suggested vs Custom */}
+        <div className="flex border-b border-stone-200 bg-stone-50 text-xs">
           <button
             onClick={() => setIsCustomMode(false)}
-            className={`flex-1 py-1.5 rounded-xl transition-all flex items-center justify-center ${
+            className={`flex-1 py-2.5 font-bold transition-all text-center ${
               !isCustomMode
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-500 hover:text-slate-800'
+                ? 'bg-white text-amber-950 border-b-2 border-amber-600 shadow-2xs'
+                : 'text-stone-500 hover:text-stone-800'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
-            Curated CymbalMart Alternatives
+            Curated Recommendations ({categorySuggestions.length})
           </button>
           <button
-            onClick={() => {
-              setIsCustomMode(true);
-              setCustomName(item.name);
-            }}
-            className={`flex-1 py-1.5 rounded-xl transition-all flex items-center justify-center ${
+            onClick={() => setIsCustomMode(true)}
+            className={`flex-1 py-2.5 font-bold transition-all text-center ${
               isCustomMode
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-500 hover:text-slate-800'
+                ? 'bg-white text-amber-950 border-b-2 border-amber-600 shadow-2xs'
+                : 'text-stone-500 hover:text-stone-800'
             }`}
           >
-            <Tag className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
             Custom Replacement
           </button>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1 text-xs sm:text-sm">
-          {!isCustomMode ? (
-            <div className="space-y-3">
-              <p className="text-slate-600 text-xs mb-2">
-                Select an alternative below to swap out this item. The budget and total will automatically adjust:
-              </p>
+        {/* Content Body */}
+        {!isCustomMode ? (
+          <div className="p-4 sm:p-6 overflow-y-auto space-y-3 flex-1 bg-white custom-scrollbar">
+            {categorySuggestions.map((sug, idx) => {
+              const estNewTotal = Math.max(0.99, Number((item.estimatedPrice + sug.priceDiff).toFixed(2)));
+              const isCheaper = sug.priceDiff < 0;
 
-              {categorySuggestions.map((sug, idx) => {
-                const targetPrice = Math.max(0.99, Number((item.estimatedPrice + sug.priceDiff).toFixed(2)));
-                const isCheaper = sug.priceDiff < 0;
-                const isPrisier = sug.priceDiff > 0;
-
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => handleApplySuggestion(sug)}
-                    className="p-3.5 rounded-2xl border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/20 transition-all cursor-pointer group shadow-2xs"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="space-y-1">
-                        <div className="font-semibold text-slate-900 group-hover:text-indigo-900 flex items-center">
+              return (
+                <div
+                  key={idx}
+                  onClick={() => handleApplySuggestion(sug)}
+                  className="p-3.5 sm:p-4 rounded-2xl border border-stone-200/90 hover:border-amber-500/80 hover:bg-amber-50/20 transition-all cursor-pointer group shadow-2xs active:scale-99"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1 flex-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <h4 className="font-bold text-xs sm:text-sm text-stone-900 group-hover:text-amber-900">
                           {sug.name}
-                        </div>
-                        <div className="text-slate-500 text-xs">
-                          {sug.quantity} • {sug.aisle}
-                        </div>
-                        {sug.notes && (
-                          <div className="text-2xs text-slate-600 italic">
-                            💡 {sug.notes}
-                          </div>
-                        )}
+                        </h4>
                         {sug.dietary && (
-                          <span className="inline-block px-1.5 py-0.5 rounded text-3xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <span className="px-1.5 py-0.5 rounded text-3xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
                             {sug.dietary}
                           </span>
                         )}
                       </div>
-
-                      <div className="text-right shrink-0">
-                        <div className="font-bold font-mono text-sm text-slate-900">
-                          ${targetPrice.toFixed(2)}
-                        </div>
-                        <div className={`text-2xs font-semibold ${
-                          isCheaper ? 'text-emerald-600' : isPrisier ? 'text-slate-500' : 'text-slate-400'
-                        }`}>
-                          {isCheaper ? `Save $${Math.abs(sug.priceDiff).toFixed(2)}` : isPrisier ? `+$${sug.priceDiff.toFixed(2)}` : 'Same price'}
-                        </div>
-                        <span className="inline-block mt-2 px-2.5 py-1 rounded-full text-2xs font-semibold bg-indigo-600 text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                          Select
-                        </span>
+                      <p className="text-2xs text-stone-600">{sug.notes}</p>
+                      <div className="text-3xs text-stone-400 flex items-center space-x-2">
+                        <span>{sug.quantity}</span>
+                        <span>•</span>
+                        <span>{sug.aisle}</span>
                       </div>
                     </div>
+
+                    <div className="text-right shrink-0">
+                      <div className="font-bold font-mono-num text-sm text-stone-900">
+                        ${estNewTotal.toFixed(2)}
+                      </div>
+                      <div className={`text-3xs font-semibold font-mono-num ${isCheaper ? 'text-emerald-700' : 'text-amber-800'}`}>
+                        {isCheaper ? `Save $${Math.abs(sug.priceDiff).toFixed(2)}` : `+$${sug.priceDiff.toFixed(2)}`}
+                      </div>
+                      <button
+                        type="button"
+                        className="mt-2 px-3 py-1 rounded-lg text-3xs font-bold bg-stone-900 text-white group-hover:bg-amber-400 group-hover:text-stone-950 transition-colors"
+                      >
+                        Select
+                      </button>
+                    </div>
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <form onSubmit={handleApplyCustom} className="p-4 sm:p-6 overflow-y-auto space-y-3.5 flex-1 text-xs bg-[#FAF9F6]">
+            <div>
+              <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">New Product Name *</label>
+              <input
+                type="text"
+                required
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                placeholder="e.g. Artisanal Garlic Crostini"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs sm:text-sm"
+              />
             </div>
-          ) : (
-            <form onSubmit={handleApplyCustom} className="space-y-4">
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">New Item Name *</label>
+                <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Quantity</label>
                 <input
                   type="text"
-                  required
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  placeholder="e.g. Cymbal Gourmet Brioche Hot Dog Buns"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                  value={customQuantity}
+                  onChange={(e) => setCustomQuantity(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Quantity Description</label>
-                  <input
-                    type="text"
-                    value={customQuantity}
-                    onChange={(e) => setCustomQuantity(e.target.value)}
-                    placeholder="e.g. 2 packs (16 count)"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Estimated Price ($ USD)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={customPrice}
-                    onChange={(e) => setCustomPrice(e.target.value)}
-                    placeholder="6.99"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50 font-mono"
-                  />
-                </div>
+              <div>
+                <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Price ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={customPrice}
+                  onChange={(e) => setCustomPrice(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs font-mono-num"
+                />
               </div>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Aisle Location</label>
-                  <input
-                    type="text"
-                    value={customAisle}
-                    onChange={(e) => setCustomAisle(e.target.value)}
-                    placeholder="e.g. Aisle 3 - Bakery"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Dietary Tag</label>
-                  <input
-                    type="text"
-                    value={customDietary}
-                    onChange={(e) => setCustomDietary(e.target.value)}
-                    placeholder="e.g. Gluten-Free, Vegan"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
-                  />
-                </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Aisle Location</label>
+                <input
+                  type="text"
+                  value={customAisle}
+                  onChange={(e) => setCustomAisle(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs"
+                />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Priority</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setCustomIsEssential(true)}
-                    className={`p-2 rounded-xl border text-center font-bold text-xs ${
-                      customIsEssential
-                        ? 'bg-indigo-50 border-indigo-500 text-indigo-800'
-                        : 'bg-slate-50 border-slate-200 text-slate-600'
-                    }`}
-                  >
-                    ✓ Essential Item
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCustomIsEssential(false)}
-                    className={`p-2 rounded-xl border text-center font-bold text-xs ${
-                      !customIsEssential
-                        ? 'bg-slate-100 border-slate-400 text-slate-800'
-                        : 'bg-slate-50 border-slate-200 text-slate-600'
-                    }`}
-                  >
-                    ★ Optional Item
-                  </button>
-                </div>
+                <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Dietary Label</label>
+                <input
+                  type="text"
+                  value={customDietary}
+                  onChange={(e) => setCustomDietary(e.target.value)}
+                  placeholder="e.g. Gluten-Free"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs"
+                />
               </div>
+            </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 rounded-full text-slate-600 hover:bg-slate-100 font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-2xs"
-                >
-                  Save Replacement
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
+            <div className="pt-2 flex justify-end space-x-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-xl text-stone-600 hover:bg-stone-200/60 font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold transition-all shadow-md active:scale-98"
+              >
+                Save Replacement
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

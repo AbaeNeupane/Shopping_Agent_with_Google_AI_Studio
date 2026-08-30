@@ -1,3 +1,22 @@
+export type ShoppingCategory = 
+  | 'Food' 
+  | 'Drinks' 
+  | 'Decorations' 
+  | 'Tableware' 
+  | 'Party supplies' 
+  | 'Optional extras';
+
+export const SHOPPING_CATEGORIES: ShoppingCategory[] = [
+  'Food',
+  'Drinks',
+  'Decorations',
+  'Tableware',
+  'Party supplies',
+  'Optional extras'
+];
+
+export type WorkflowStage = 'define' | 'review' | 'refine' | 'finalize';
+
 export interface PartyDetails {
   partyType: string;
   guestCount: number | null;
@@ -11,10 +30,10 @@ export interface PartyDetails {
 export interface ShoppingItem {
   id: string;
   name: string;
-  category: string;
+  category: ShoppingCategory | string;
   quantityDescription: string;
-  estimatedPrice: number;
-  unitPrice?: number;
+  unitPrice: number;
+  estimatedPrice: number; // estimated subtotal
   isEssential: boolean;
   isEnabled?: boolean;
   isChecked?: boolean;
@@ -46,6 +65,7 @@ export interface ChatMessage {
   sender: 'user' | 'agent' | 'system';
   text: string;
   timestamp: string;
+  stage?: WorkflowStage;
   quickReplies?: string[];
   missingFields?: string[];
   extractedDetails?: Partial<PartyDetails>;
@@ -64,3 +84,4 @@ export interface QuickTheme {
   dietarySuggestions: string[];
   specialRequests: string;
 }
+

@@ -8,14 +8,12 @@ interface AddItemModalProps {
 }
 
 const CATEGORIES = [
-  "Mains & Proteins",
-  "Fresh Produce",
-  "Bakery & Deli",
-  "Beverages & Bar",
-  "Snacks & Appetizers",
-  "Party Supplies & Tableware",
-  "Desserts & Sweets",
-  "Ice & Essentials"
+  "Food",
+  "Drinks",
+  "Decorations",
+  "Tableware",
+  "Party supplies",
+  "Optional extras"
 ];
 
 const AISLES = [
@@ -53,6 +51,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
       name: name.trim(),
       category,
       quantityDescription: quantityDescription.trim() || '1 item',
+      unitPrice: parseFloat(estimatedPrice) || 0,
       estimatedPrice: parseFloat(estimatedPrice) || 0,
       isEssential,
       isEnabled: true,
@@ -67,167 +66,168 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+    <div className="fixed inset-0 z-50 bg-stone-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-stone-200/90 overflow-hidden animate-in fade-in zoom-in-95">
         {/* Modal Header */}
-        <div className="bg-slate-900 text-white p-4 sm:px-6 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
-              <ShoppingBag className="w-4 h-4" />
+        <div className="bg-gradient-to-r from-stone-900 via-stone-900 to-amber-950 text-white p-5 sm:px-6 border-b border-stone-800 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-400 text-stone-950 flex items-center justify-center shadow-md">
+              <ShoppingBag className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm sm:text-base text-slate-100">Add Item to Shopping List</h3>
-              <p className="text-2xs text-slate-400">Add a grocery, beverage, or party supply item</p>
+              <h3 className="font-bold text-base text-stone-100 font-serif-luxury">Add Custom Product</h3>
+              <p className="text-2xs text-stone-300">Incorporate additional grocery, beverage, or décor items</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 text-xs sm:text-sm">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 text-xs sm:text-sm bg-[#FAF9F6]">
           {/* Item Name */}
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Item Name *</label>
+            <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Item Name *</label>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Cymbal Artisan Sourdough Baguette, Lime Wedges (1 lb)"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+              placeholder="e.g. Organic Guacamole & Artisan Pita Chips"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs sm:text-sm"
             />
           </div>
 
+          {/* Category & Aisle */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Category */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Category</label>
+              <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Category</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs sm:text-sm"
               >
-                {CATEGORIES.map(c => (
-                  <option key={c} value={c}>{c}</option>
+                {CATEGORIES.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
             </div>
 
-            {/* Aisle */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">CymbalMart Aisle</label>
+              <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">CymbalMart Aisle</label>
               <select
                 value={cymbalMartAisle}
                 onChange={(e) => setCymbalMartAisle(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs sm:text-sm"
               >
-                {AISLES.map(a => (
-                  <option key={a} value={a}>{a}</option>
+                {AISLES.map(aisle => (
+                  <option key={aisle} value={aisle}>{aisle}</option>
                 ))}
               </select>
             </div>
           </div>
 
+          {/* Quantity & Price */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Quantity Description */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Quantity Description</label>
+              <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Quantity & Unit</label>
               <input
                 type="text"
                 value={quantityDescription}
                 onChange={(e) => setQuantityDescription(e.target.value)}
-                placeholder="e.g. 2 packs (16 count total)"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                placeholder="e.g. 2 large packs (16 oz)"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs sm:text-sm"
               />
             </div>
 
-            {/* Estimated Price */}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Estimated Price ($ USD)</label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={estimatedPrice}
-                onChange={(e) => setEstimatedPrice(e.target.value)}
-                placeholder="5.99"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50 font-mono"
-              />
+              <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Estimated Price ($)</label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-stone-400 font-mono-num">$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={estimatedPrice}
+                  onChange={(e) => setEstimatedPrice(e.target.value)}
+                  className="w-full pl-7 pr-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs sm:text-sm font-mono-num"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Essential vs Optional Toggle */}
+          {/* Essential vs Optional */}
           <div>
-            <label className="block font-semibold text-slate-700 mb-1.5">Priority Level</label>
+            <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Priority Status</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setIsEssential(true)}
-                className={`p-2.5 rounded-xl border text-center font-bold text-xs transition-colors ${
+                className={`py-2 px-3 rounded-xl border text-center font-semibold transition-all ${
                   isEssential
-                    ? 'bg-indigo-50 border-indigo-500 text-indigo-800 ring-2 ring-indigo-500/20'
-                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                    ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-2xs'
+                    : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
                 }`}
               >
-                ✓ Essential Item
+                Essential Item
               </button>
               <button
                 type="button"
                 onClick={() => setIsEssential(false)}
-                className={`p-2.5 rounded-xl border text-center font-bold text-xs transition-colors ${
+                className={`py-2 px-3 rounded-xl border text-center font-semibold transition-all ${
                   !isEssential
-                    ? 'bg-slate-100 border-slate-400 text-slate-800 ring-2 ring-slate-400/20'
-                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                    ? 'bg-amber-50 border-amber-300 text-amber-900 shadow-2xs'
+                    : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
                 }`}
               >
-                ★ Optional Item
+                Optional Upgrade
               </button>
             </div>
           </div>
 
-          {/* Dietary & Theme Notes */}
+          {/* Theme & Dietary Notes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Dietary Tag (Optional)</label>
+              <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Theme Relevance (Optional)</label>
+              <input
+                type="text"
+                value={themeRelevance}
+                onChange={(e) => setThemeRelevance(e.target.value)}
+                placeholder="e.g. Backyard Luau centerpieces"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-stone-700 mb-1 text-2xs uppercase tracking-wider">Dietary Tag (Optional)</label>
               <input
                 type="text"
                 value={dietaryNote}
                 onChange={(e) => setDietaryNote(e.target.value)}
                 placeholder="e.g. Gluten-Free, Vegan"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-700 mb-1">Theme Note (Optional)</label>
-              <input
-                type="text"
-                value={themeRelevance}
-                onChange={(e) => setThemeRelevance(e.target.value)}
-                placeholder="e.g. Island garnishes"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-white text-xs sm:text-sm"
               />
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
+          {/* Footer Actions */}
+          <div className="pt-3 border-t border-stone-200 flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-full text-slate-600 hover:bg-slate-100 font-medium transition-colors"
+              className="px-4 py-2 rounded-xl text-stone-600 hover:bg-stone-200/60 font-semibold transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition-colors shadow-2xs"
+              className="px-6 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold transition-all shadow-md active:scale-98"
             >
-              Add to List
+              Add to Plan
             </button>
           </div>
         </form>

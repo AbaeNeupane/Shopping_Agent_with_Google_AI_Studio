@@ -8,14 +8,16 @@ import {
   ShieldAlert, 
   FileText, 
   CheckCircle2, 
-  AlertCircle, 
   Edit3, 
   Check, 
   X,
-  Plus
+  Plus,
+  Sliders,
+  Utensils,
+  PartyPopper
 } from 'lucide-react';
 import { PartyDetails } from '../types';
-import { COMMON_DIETARY_OPTIONS, COMMON_THEMES } from '../data/presets';
+import { COMMON_DIETARY_OPTIONS } from '../data/presets';
 
 interface PartyParametersCardProps {
   partyDetails: PartyDetails;
@@ -90,22 +92,25 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
   ];
 
   const filledCount = fields.filter(f => f.val !== null && f.val !== '' && f.val !== undefined).length;
-  const isReady = filledCount >= 4;
+  const isAllDefined = filledCount === 7;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Parameters Header / Status Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
-        <div className="flex items-center space-x-2">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Party Planning Specs</span>
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
-            filledCount === 7 
-              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
+        <div className="flex items-center space-x-2.5">
+          <span className="text-xs font-bold text-stone-500 uppercase tracking-widest flex items-center">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2" />
+            Event Blueprint (7 Factors)
+          </span>
+          <span className={`px-2.5 py-0.5 rounded-full text-2xs font-semibold font-mono-num ${
+            isAllDefined 
+              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' 
               : filledCount >= 4 
-              ? 'bg-indigo-100 text-indigo-800 border border-indigo-200'
-              : 'bg-amber-100 text-amber-800 border border-amber-200'
+              ? 'bg-amber-50 text-amber-900 border border-amber-200'
+              : 'bg-stone-100 text-stone-700 border border-stone-200'
           }`}>
-            {filledCount}/7 Details Set
+            {filledCount} of 7 Defined
           </span>
         </div>
 
@@ -113,23 +118,24 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
           {!isEditing ? (
             <button
               onClick={() => setIsEditing(true)}
-              className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 shadow-2xs transition-colors"
+              className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-lg text-stone-700 bg-white hover:bg-stone-50 border border-stone-200 shadow-2xs hover:shadow-xs transition-all active:scale-98"
             >
-              <Edit3 className="w-3.5 h-3.5 mr-1 text-slate-500" />
-              Edit Specs
+              <Edit3 className="w-3.5 h-3.5 mr-1.5 text-stone-400" />
+              Edit Blueprint
             </button>
           ) : (
             <div className="flex items-center space-x-1.5">
               <button
                 onClick={handleSave}
-                className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full text-white bg-indigo-600 hover:bg-indigo-700 shadow-2xs transition-colors"
+                className="inline-flex items-center px-3.5 py-1 text-xs font-semibold rounded-lg text-white bg-stone-900 hover:bg-stone-800 shadow-2xs transition-all active:scale-98"
               >
-                <Check className="w-3.5 h-3.5 mr-1" />
-                Done
+                <Check className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                Apply Changes
               </button>
               <button
                 onClick={handleCancel}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-200 transition-colors"
+                className="p-1 text-stone-400 hover:text-stone-700 rounded-lg hover:bg-stone-100 transition-colors"
+                title="Cancel edit"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -140,61 +146,95 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
 
       {/* Bento Grid layout for specs & restrictions */}
       {!isEditing ? (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          {/* Bento Card 1: Party Specs */}
-          <section className="md:col-span-6 bg-white rounded-3xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5">
+          {/* Bento Card 1: Core Logistics */}
+          <section className="md:col-span-7 bg-white rounded-2xl border border-stone-200/90 p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] flex flex-col justify-between">
             <div>
-              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center justify-between">
-                <span>Party Specs</span>
-                <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-              </h2>
-              <div className="space-y-2.5">
-                <div className="flex justify-between border-b border-slate-100 pb-2">
-                  <span className="text-slate-500 text-sm">Theme</span>
-                  <span className="text-slate-800 text-sm font-semibold truncate max-w-[200px]">
-                    {partyDetails.theme || <span className="text-slate-400 font-normal italic">Awaiting theme</span>}
-                  </span>
+              <div className="flex items-center justify-between pb-3 border-b border-stone-100 mb-3.5">
+                <div className="flex items-center space-x-2">
+                  <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-100">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-stone-900 tracking-tight">Core Event Coordinates</h3>
+                    <p className="text-3xs text-stone-400">Occasion, scale & financial target</p>
+                  </div>
                 </div>
-                <div className="flex justify-between border-b border-slate-100 pb-2">
-                  <span className="text-slate-500 text-sm">Guests</span>
-                  <span className="text-slate-800 text-sm font-semibold">
-                    {partyDetails.guestCount ? `${partyDetails.guestCount} Guests` : <span className="text-slate-400 font-normal italic">Awaiting count</span>}
+                {partyDetails.partyType && (
+                  <span className="text-2xs font-semibold px-2.5 py-0.5 rounded-md bg-stone-100 text-stone-700 border border-stone-200/60">
+                    {partyDetails.partyType}
                   </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {/* Theme */}
+                <div className="p-2.5 rounded-xl bg-[#FAF9F6] border border-stone-200/70">
+                  <span className="text-3xs uppercase font-bold text-stone-400 tracking-wider block mb-1">Theme</span>
+                  <div className="text-xs font-semibold text-stone-800 truncate" title={partyDetails.theme || 'Pending'}>
+                    {partyDetails.theme || <span className="text-stone-400 font-normal italic">Awaiting</span>}
+                  </div>
                 </div>
-                <div className="flex justify-between border-b border-slate-100 pb-2">
-                  <span className="text-slate-500 text-sm">Target Budget</span>
-                  <span className="text-slate-800 text-sm font-semibold font-mono text-indigo-600">
-                    {partyDetails.budget ? `$${partyDetails.budget} USD` : <span className="text-slate-400 font-normal italic">Awaiting budget</span>}
-                  </span>
+
+                {/* Guests */}
+                <div className="p-2.5 rounded-xl bg-[#FAF9F6] border border-stone-200/70">
+                  <span className="text-3xs uppercase font-bold text-stone-400 tracking-wider block mb-1">Guests</span>
+                  <div className="text-xs font-semibold text-stone-800 flex items-center">
+                    <Users className="w-3 h-3 mr-1 text-stone-400" />
+                    {partyDetails.guestCount ? `${partyDetails.guestCount} ppl` : <span className="text-stone-400 font-normal italic">Awaiting</span>}
+                  </div>
                 </div>
-                <div className="flex justify-between border-b border-slate-100 pb-2">
-                  <span className="text-slate-500 text-sm">Date</span>
-                  <span className="text-slate-800 text-sm font-semibold">
-                    {partyDetails.date || <span className="text-slate-400 font-normal italic">Awaiting date</span>}
-                  </span>
+
+                {/* Budget */}
+                <div className="p-2.5 rounded-xl bg-[#FAF9F6] border border-stone-200/70">
+                  <span className="text-3xs uppercase font-bold text-stone-400 tracking-wider block mb-1">Budget</span>
+                  <div className="text-xs font-bold font-mono-num text-emerald-800">
+                    {partyDetails.budget ? `$${partyDetails.budget}` : <span className="text-stone-400 font-normal italic">Awaiting</span>}
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500 text-sm">Party Type</span>
-                  <span className="text-slate-800 text-sm font-semibold">
-                    {partyDetails.partyType || <span className="text-slate-400 font-normal italic">Awaiting input</span>}
-                  </span>
+
+                {/* Date */}
+                <div className="p-2.5 rounded-xl bg-[#FAF9F6] border border-stone-200/70">
+                  <span className="text-3xs uppercase font-bold text-stone-400 tracking-wider block mb-1">Date</span>
+                  <div className="text-xs font-semibold text-stone-800 truncate" title={partyDetails.date || 'Pending'}>
+                    {partyDetails.date || <span className="text-stone-400 font-normal italic">Awaiting</span>}
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Micro per-guest allocation metric */}
+            {partyDetails.budget && partyDetails.guestCount && (
+              <div className="mt-3.5 pt-3 border-t border-stone-100 flex items-center justify-between text-2xs text-stone-500">
+                <span className="flex items-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" />
+                  Estimated spend per guest:
+                </span>
+                <span className="font-bold font-mono-num text-stone-900">
+                  ${(partyDetails.budget / partyDetails.guestCount).toFixed(2)} / guest
+                </span>
+              </div>
+            )}
           </section>
 
           {/* Bento Card 2: Restrictions & Requests */}
-          <section className="md:col-span-6 bg-white rounded-3xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between">
+          <section className="md:col-span-5 bg-white rounded-2xl border border-stone-200/90 p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] flex flex-col justify-between">
             <div>
-              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center justify-between">
-                <span>Restrictions & Requests</span>
-                <ShieldAlert className="w-3.5 h-3.5 text-orange-500" />
-              </h2>
+              <div className="flex items-center justify-between pb-3 border-b border-stone-100 mb-3.5">
+                <div className="flex items-center space-x-2">
+                  <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center border border-rose-100">
+                    <ShieldAlert className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-stone-900 tracking-tight">Dietary & Custom Requests</h3>
+                    <p className="text-3xs text-stone-400">Allergen safety & aesthetic notes</p>
+                  </div>
+                </div>
+              </div>
               
-              <div className="space-y-4">
+              <div className="space-y-2.5">
                 <div>
-                  <div className="text-2xs font-semibold text-slate-400 uppercase mb-1.5">Dietary Accommodations</div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {partyDetails.dietaryRestrictions && partyDetails.dietaryRestrictions.length > 0 ? (
                       partyDetails.dietaryRestrictions.map((d, i) => {
                         const isNut = d.toLowerCase().includes('nut') || d.toLowerCase().includes('peanut');
@@ -202,43 +242,42 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
                         const isVegan = d.toLowerCase().includes('vegan') || d.toLowerCase().includes('veg');
                         const isDairy = d.toLowerCase().includes('dairy') || d.toLowerCase().includes('lactose');
 
-                        let badgeColor = 'bg-slate-100 text-slate-700 border-slate-200';
-                        if (isNut) badgeColor = 'bg-orange-50 text-orange-700 border-orange-200';
-                        else if (isGluten) badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-                        else if (isVegan) badgeColor = 'bg-green-50 text-green-700 border-green-200';
-                        else if (isDairy) badgeColor = 'bg-blue-50 text-blue-700 border-blue-200';
+                        let badgeColor = 'bg-stone-50 text-stone-700 border-stone-200';
+                        if (isNut) badgeColor = 'bg-amber-50 text-amber-800 border-amber-200';
+                        else if (isGluten) badgeColor = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+                        else if (isVegan) badgeColor = 'bg-teal-50 text-teal-800 border-teal-200';
+                        else if (isDairy) badgeColor = 'bg-blue-50 text-blue-800 border-blue-200';
 
                         return (
-                          <span key={i} className={`text-xs px-2.5 py-1 rounded-md font-medium border ${badgeColor}`}>
+                          <span key={i} className={`text-2xs px-2.5 py-0.5 rounded-full font-medium border ${badgeColor}`}>
                             {d}
                           </span>
                         );
                       })
                     ) : (
-                      <span className="text-xs text-slate-400 italic">No dietary restrictions noted</span>
+                      <span className="text-2xs text-stone-400 italic">No dietary restrictions recorded</span>
                     )}
                   </div>
                 </div>
 
-                <div className="border-t border-slate-100 pt-3">
-                  <div className="text-2xs font-semibold text-slate-400 uppercase mb-1">Host Special Notes</div>
-                  <p className="text-xs text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-100 italic leading-relaxed">
-                    {partyDetails.specialRequests || "+ Request: Standard party setup (drinks, finger food, tableware)"}
+                <div className="pt-2">
+                  <p className="text-2xs text-stone-600 bg-[#FAF9F6] p-2 rounded-xl border border-stone-200/70 italic leading-relaxed line-clamp-2">
+                    {partyDetails.specialRequests || "Standard party setup (appetizers, drinks, tableware & decorations)"}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <div className="text-2xs text-slate-400">
-                {filledCount >= 4 ? "✓ Sizing algorithms ready" : "Awaiting key specs"}
+            <div className="mt-3.5 pt-3 border-t border-stone-100 flex items-center justify-between">
+              <div className="text-3xs text-stone-400">
+                {filledCount >= 4 ? "✓ Logistics algorithms synced" : "Awaiting event parameters"}
               </div>
               <button
                 onClick={onTriggerGenerate}
                 disabled={isGenerating}
-                className="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-2xs flex items-center disabled:opacity-50"
+                className="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-stone-900 bg-amber-400 hover:bg-amber-300 transition-all shadow-2xs flex items-center disabled:opacity-50 active:scale-98"
               >
-                <Sparkles className="w-3 h-3 mr-1 text-indigo-200" />
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-stone-950" />
                 {isGenerating ? "Calculating..." : "Sync Shopping List"}
               </button>
             </div>
@@ -246,22 +285,29 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
         </div>
       ) : (
         /* Edit Form Bento Box */
-        <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-4">
-          <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Edit Party Parameters</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs sm:text-sm">
+        <div className="bg-white rounded-2xl border border-stone-200/90 p-5 sm:p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+            <h3 className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center">
+              <Sliders className="w-3.5 h-3.5 mr-1.5 text-amber-600" />
+              Edit 7 Event Parameters
+            </h3>
+            <span className="text-2xs text-stone-400">All fields update the AI shopping matrix</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Party Type</label>
+              <label className="block text-2xs font-bold uppercase tracking-wider text-stone-600 mb-1">1. Party Type</label>
               <input
                 type="text"
                 value={editForm.partyType}
                 onChange={(e) => setEditForm({ ...editForm, partyType: e.target.value })}
                 placeholder="e.g. Birthday Party, BBQ, Cocktail Night"
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-stone-50/50"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Number of Guests</label>
+              <label className="block text-2xs font-bold uppercase tracking-wider text-stone-600 mb-1">2. Number of Guests</label>
               <input
                 type="number"
                 min="1"
@@ -269,12 +315,12 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
                 value={editForm.guestCount || ''}
                 onChange={(e) => setEditForm({ ...editForm, guestCount: e.target.value ? parseInt(e.target.value, 10) : null })}
                 placeholder="e.g. 15"
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                className="w-full px-3 py-2 text-xs font-mono-num rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-stone-50/50"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Target Budget ($ USD)</label>
+              <label className="block text-2xs font-bold uppercase tracking-wider text-stone-600 mb-1">3. Target Budget ($ USD)</label>
               <input
                 type="number"
                 min="10"
@@ -282,35 +328,35 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
                 value={editForm.budget || ''}
                 onChange={(e) => setEditForm({ ...editForm, budget: e.target.value ? parseFloat(e.target.value) : null })}
                 placeholder="e.g. 150"
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                className="w-full px-3 py-2 text-xs font-mono-num rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-stone-50/50"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Date</label>
+              <label className="block text-2xs font-bold uppercase tracking-wider text-stone-600 mb-1">4. Date / Timing</label>
               <input
                 type="text"
                 value={editForm.date}
                 onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
-                placeholder="e.g. This Saturday, Oct 15"
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                placeholder="e.g. This Saturday 6:00 PM"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-stone-50/50"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Party Theme</label>
+              <label className="block text-2xs font-bold uppercase tracking-wider text-stone-600 mb-1">5. Party Theme</label>
               <input
                 type="text"
                 value={editForm.theme}
                 onChange={(e) => setEditForm({ ...editForm, theme: e.target.value })}
-                placeholder="e.g. Outer Space, Tropical Luau, Backyard BBQ"
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                placeholder="e.g. Retro Disco Glam, Tropical Tiki Luau, Taco Fiesta"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-stone-50/50"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Dietary Restrictions</label>
+            <label className="block text-2xs font-bold uppercase tracking-wider text-stone-600 mb-1.5">6. Dietary Restrictions</label>
             <div className="flex flex-wrap gap-1.5 mb-2">
               {COMMON_DIETARY_OPTIONS.map((item) => {
                 const active = editForm.dietaryRestrictions?.includes(item);
@@ -319,10 +365,10 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
                     type="button"
                     key={item}
                     onClick={() => toggleDietary(item)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    className={`px-3 py-1 rounded-full text-2xs font-semibold transition-all ${
                       active
-                        ? 'bg-indigo-600 text-white shadow-2xs'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                        ? 'bg-stone-900 text-white shadow-xs'
+                        : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200/80'
                     }`}
                   >
                     {active ? '✓ ' : '+ '}{item}
@@ -337,7 +383,7 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
                 value={customDiet}
                 onChange={(e) => setCustomDiet(e.target.value)}
                 placeholder="Add custom restriction..."
-                className="flex-1 px-3 py-1.5 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+                className="flex-1 px-3 py-1.5 text-2xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-stone-50/50"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
@@ -348,7 +394,7 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
               <button
                 type="button"
                 onClick={addCustomDiet}
-                className="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-200"
+                className="px-3 py-1.5 text-2xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl border border-stone-200"
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
@@ -356,13 +402,13 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Special Requests</label>
+            <label className="block text-2xs font-bold uppercase tracking-wider text-stone-600 mb-1">7. Special Requests & Preferences</label>
             <textarea
               rows={2}
               value={editForm.specialRequests}
               onChange={(e) => setEditForm({ ...editForm, specialRequests: e.target.value })}
               placeholder="e.g. Bio-degradable plates, glowing decor, signature mocktail"
-              className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-stone-50/50"
             />
           </div>
         </div>

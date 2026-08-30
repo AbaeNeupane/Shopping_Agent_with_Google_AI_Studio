@@ -31,7 +31,7 @@ function getGeminiClient(): GoogleGenAI | null {
 function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
   const guests = Number(details.guestCount) || 12;
   const budget = Number(details.budget) || 150;
-  const partyType = details.partyType || "Party";
+  const partyType = details.partyType || "Celebration Party";
   const theme = details.theme || "Fun & Festive";
   const dietary = Array.isArray(details.dietaryRestrictions) && details.dietaryRestrictions.length > 0
     ? details.dietaryRestrictions
@@ -43,27 +43,30 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
   const items: any[] = [];
   let idCounter = 1;
 
-  // Mains & Proteins
+  // 1. FOOD
   if (partyType.toLowerCase().includes("bbq") || theme.toLowerCase().includes("bbq") || theme.toLowerCase().includes("tailgate")) {
     const burgerPacks = Math.ceil(guests / 6);
+    const unitPrice = 11.99;
     items.push({
       id: `item-${idCounter++}`,
       name: "Cymbal Choice Angus Beef Burger Patties (6-ct)",
-      category: "Mains & Proteins",
+      category: "Food",
       quantityDescription: `${burgerPacks} packs (${burgerPacks * 6} patties for ${guests} guests)`,
-      estimatedPrice: Number((burgerPacks * 11.99).toFixed(2)),
+      unitPrice: unitPrice,
+      estimatedPrice: Number((burgerPacks * unitPrice).toFixed(2)),
       isEssential: true,
-      themeRelevance: `Classic hearty base for ${theme}`,
+      themeRelevance: `Hearty main entree for ${theme}`,
       dietaryNote: "100% pure beef, gluten-free",
-      cymbalMartAisle: "Aisle 1 - Meat & Seafood",
+      cymbalMartAisle: "Aisle 1 - Meat & Poultry",
       notes: "Calculated 1.5 burgers per guest"
     });
     if (isVeg) {
       items.push({
         id: `item-${idCounter++}`,
         name: "Cymbal Plant-Based Burger Patties (4-ct)",
-        category: "Mains & Proteins",
+        category: "Food",
         quantityDescription: "1 pack (4 patties)",
+        unitPrice: 6.49,
         estimatedPrice: 6.49,
         isEssential: true,
         themeRelevance: "Vegetarian crowd pleaser",
@@ -73,14 +76,16 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
       });
     }
     const bunPacks = Math.ceil(guests / 8);
+    const bunPrice = 3.49;
     items.push({
       id: `item-${idCounter++}`,
       name: "Cymbal Bakery Brioche Hamburger Buns (8-ct)",
-      category: "Bakery & Deli",
+      category: "Food",
       quantityDescription: `${bunPacks} bags (${bunPacks * 8} buns)`,
-      estimatedPrice: Number((bunPacks * 3.49).toFixed(2)),
+      unitPrice: bunPrice,
+      estimatedPrice: Number((bunPacks * bunPrice).toFixed(2)),
       isEssential: true,
-      themeRelevance: "Golden bakery buns",
+      themeRelevance: "Fresh bakery buns",
       dietaryNote: isGF ? "Contains wheat (see GF option)" : "Vegetarian",
       cymbalMartAisle: "Aisle 3 - Fresh Bakery",
       notes: "Freshly baked daily"
@@ -89,8 +94,9 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
       items.push({
         id: `item-${idCounter++}`,
         name: "Udi's Gluten-Free Hamburger Buns (4-ct)",
-        category: "Bakery & Deli",
+        category: "Food",
         quantityDescription: "1 pack (4 buns)",
+        unitPrice: 5.99,
         estimatedPrice: 5.99,
         isEssential: true,
         themeRelevance: "Dietary inclusive staple",
@@ -99,13 +105,16 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
         notes: "Keeps gluten-sensitive guests covered"
       });
     }
-  } else if (partyType.toLowerCase().includes("cocktail") || partyType.toLowerCase().includes("dinner")) {
+  } else if (partyType.toLowerCase().includes("cocktail") || partyType.toLowerCase().includes("dinner") || partyType.toLowerCase().includes("tapas")) {
+    const boardCount = Math.ceil(guests / 10);
+    const boardPrice = 18.99;
     items.push({
       id: `item-${idCounter++}`,
-      name: "Cymbal Artisan Charcuterie & Cheese Tasting Platter (28 oz)",
-      category: "Mains & Proteins",
-      quantityDescription: `${Math.ceil(guests / 10)} large boards`,
-      estimatedPrice: Number((Math.ceil(guests / 10) * 19.99).toFixed(2)),
+      name: "Cymbal Artisan Charcuterie & Gourmet Cheese Platter (28 oz)",
+      category: "Food",
+      quantityDescription: `${boardCount} large tasting boards`,
+      unitPrice: boardPrice,
+      estimatedPrice: Number((boardCount * boardPrice).toFixed(2)),
       isEssential: true,
       themeRelevance: `Sophisticated display matching ${theme}`,
       dietaryNote: isNutFree ? "Nut-free curated board" : "Includes cured meats & artisan cheeses",
@@ -115,12 +124,14 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
   } else {
     // General / Birthday / Game Night
     const pizzaCount = Math.ceil(guests / 3.5);
+    const pizzaPrice = 7.99;
     items.push({
       id: `item-${idCounter++}`,
-      name: "Cymbal Select Wood-Fired Artisan Pizzas (Assorted 3-Cheese & Pepperoni)",
-      category: "Mains & Proteins",
+      name: "Cymbal Select Wood-Fired Artisan Pizzas (3-Cheese & Pepperoni)",
+      category: "Food",
       quantityDescription: `${pizzaCount} whole 14\" pizzas`,
-      estimatedPrice: Number((pizzaCount * 7.99).toFixed(2)),
+      unitPrice: pizzaPrice,
+      estimatedPrice: Number((pizzaCount * pizzaPrice).toFixed(2)),
       isEssential: true,
       themeRelevance: `Crowd-pleasing main for ${partyType}`,
       dietaryNote: isGF ? "Wheat crust (see GF alternative)" : "Standard dairy/meat",
@@ -131,8 +142,9 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
       items.push({
         id: `item-${idCounter++}`,
         name: "Caulipower Gluten-Free Margherita Pizza",
-        category: "Mains & Proteins",
+        category: "Food",
         quantityDescription: "1 pizza",
+        unitPrice: 8.99,
         estimatedPrice: 8.99,
         isEssential: true,
         themeRelevance: "Dietary friendly main",
@@ -143,41 +155,48 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
     }
   }
 
-  // Fresh Produce & Sides
+  // Food - Produce, Snacks & Desserts
   const fruitTrays = Math.ceil(guests / 10);
+  const fruitPrice = 9.99;
   items.push({
     id: `item-${idCounter++}`,
     name: "Cymbal Fresh Cut Seasonal Fruit & Berry Party Bowl (3 lbs)",
-    category: "Fresh Produce",
+    category: "Food",
     quantityDescription: `${fruitTrays} bowls (${fruitTrays * 3} lbs)`,
-    estimatedPrice: Number((fruitTrays * 11.49).toFixed(2)),
+    unitPrice: fruitPrice,
+    estimatedPrice: Number((fruitTrays * fruitPrice).toFixed(2)),
     isEssential: true,
-    themeRelevance: `Refreshing pops of color matching ${theme}`,
+    themeRelevance: `Crisp fruit pops matching ${theme}`,
     dietaryNote: "Naturally Gluten-Free, Vegan, Nut-Free",
     cymbalMartAisle: "Aisle 1 - Produce Department",
     notes: "Assorted melon, pineapple, grapes & berries"
   });
 
-  // Snacks & Appetizers
   const chipBags = Math.ceil(guests / 5);
+  const chipPrice = 3.29;
   items.push({
     id: `item-${idCounter++}`,
     name: "Cymbal Crispy Cantina Tortilla Chips (16 oz)",
-    category: "Snacks & Appetizers",
+    category: "Food",
     quantityDescription: `${chipBags} party-size bags`,
-    estimatedPrice: Number((chipBags * 3.29).toFixed(2)),
+    unitPrice: chipPrice,
+    estimatedPrice: Number((chipBags * chipPrice).toFixed(2)),
     isEssential: true,
     themeRelevance: "Crunchy sharing snack",
     dietaryNote: "Gluten-Free & Vegan",
     cymbalMartAisle: "Aisle 5 - Chips & Snacks",
     notes: "Serve with dips in bowls"
   });
+
+  const dipTubs = Math.ceil(guests / 8);
+  const dipPrice = 6.49;
   items.push({
     id: `item-${idCounter++}`,
-    name: "Cymbal Fresh Mild Chunky Guacamole & Fire-Roasted Salsa Duo",
-    category: "Snacks & Appetizers",
-    quantityDescription: `${Math.ceil(guests / 8)} tub packs (32 oz total)`,
-    estimatedPrice: Number((Math.ceil(guests / 8) * 6.99).toFixed(2)),
+    name: "Cymbal Fresh Guacamole & Fire-Roasted Salsa Duo (32 oz)",
+    category: "Food",
+    quantityDescription: `${dipTubs} duo packs`,
+    unitPrice: dipPrice,
+    estimatedPrice: Number((dipTubs * dipPrice).toFixed(2)),
     isEssential: true,
     themeRelevance: "Vibrant dip pairing",
     dietaryNote: "Vegan, Gluten-Free, Nut-Free",
@@ -185,26 +204,48 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
     notes: "Keep refrigerated until start"
   });
 
-  // Beverages & Bar
-  const seltzerPacks = Math.ceil((guests * 2) / 12);
+  const dessertPacks = Math.ceil(guests / 12);
+  const cupcakePrice = 8.99;
   items.push({
     id: `item-${idCounter++}`,
-    name: "Cymbal Sparkling Seltzer Variety Pack (12 x 12 fl oz cans)",
-    category: "Beverages & Bar",
-    quantityDescription: `${seltzerPacks} twelve-packs (${seltzerPacks * 12} cans total)`,
-    estimatedPrice: Number((seltzerPacks * 4.99).toFixed(2)),
+    name: "Cymbal Bakery Celebration Cupcake Assortment (12-ct Vanilla & Chocolate)",
+    category: "Food",
+    quantityDescription: `${dessertPacks} packs (${dessertPacks * 12} cupcakes)`,
+    unitPrice: cupcakePrice,
+    estimatedPrice: Number((dessertPacks * cupcakePrice).toFixed(2)),
     isEssential: true,
-    themeRelevance: "Zero-sugar refreshing hydration",
+    themeRelevance: `Centerpiece treat for ${partyType}`,
+    dietaryNote: isNutFree ? "Nut-free facility bakery" : "Contains egg, dairy, wheat",
+    cymbalMartAisle: "Aisle 3 - Bakery Showcase",
+    notes: "1 cupcake per guest"
+  });
+
+  // 2. DRINKS
+  const seltzerPacks = Math.ceil((guests * 2) / 12);
+  const seltzerPrice = 4.99;
+  items.push({
+    id: `item-${idCounter++}`,
+    name: "Cymbal Sparkling Seltzer Variety 12-Pack (12 x 12 oz cans)",
+    category: "Drinks",
+    quantityDescription: `${seltzerPacks} twelve-packs (${seltzerPacks * 12} cans total)`,
+    unitPrice: seltzerPrice,
+    estimatedPrice: Number((seltzerPacks * seltzerPrice).toFixed(2)),
+    isEssential: true,
+    themeRelevance: "Crisp zero-sugar hydration",
     dietaryNote: "Gluten-Free, Vegan, Zero Calorie",
     cymbalMartAisle: "Aisle 7 - Beverages",
     notes: "Calculated 2 cans per guest"
   });
+
+  const juiceJugs = Math.ceil(guests / 8);
+  const juicePrice = 3.79;
   items.push({
     id: `item-${idCounter++}`,
-    name: "Cymbal All-Natural Lemonade / Fruit Punch (1 Gallon)",
-    category: "Beverages & Bar",
-    quantityDescription: `${Math.ceil(guests / 8)} gallon jugs`,
-    estimatedPrice: Number((Math.ceil(guests / 8) * 3.79).toFixed(2)),
+    name: "Cymbal All-Natural Chilled Lemonade / Fruit Punch (1 Gallon)",
+    category: "Drinks",
+    quantityDescription: `${juiceJugs} gallon jugs`,
+    unitPrice: juicePrice,
+    estimatedPrice: Number((juiceJugs * juicePrice).toFixed(2)),
     isEssential: true,
     themeRelevance: `Sweet chilled beverage for ${theme}`,
     dietaryNote: "Dairy-Free, Nut-Free",
@@ -212,112 +253,172 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
     notes: "Great standalone or drink mixer"
   });
 
-  // Ice & Essentials
   const iceBags = Math.max(1, Math.ceil(guests / 8));
+  const icePrice = 2.49;
   items.push({
     id: `item-${idCounter++}`,
-    name: "Cymbal Premium Pure Filtered Party Ice (10 lb bag)",
-    category: "Ice & Essentials",
-    quantityDescription: `${iceBags} bags (${iceBags * 10} lbs)`,
-    estimatedPrice: Number((iceBags * 2.49).toFixed(2)),
+    name: "Cymbal Pure Filtered Party Ice (10 lb bag)",
+    category: "Drinks",
+    quantityDescription: `${iceBags} bags (${iceBags * 10} lbs total)`,
+    unitPrice: icePrice,
+    estimatedPrice: Number((iceBags * icePrice).toFixed(2)),
     isEssential: true,
-    themeRelevance: "Essential for cooler & drink tubs",
-    dietaryNote: "Pure water",
+    themeRelevance: "Essential drink and cooler chilling",
+    dietaryNote: "Pure filtered water",
     cymbalMartAisle: "Front Entry - Ice Freezers",
-    notes: "Keeps drinks chilled for 4-6 hours"
+    notes: "Keeps drinks cold for 4-6 hours"
   });
 
-  // Party Supplies & Tableware
+  // 3. DECORATIONS
+  items.push({
+    id: `item-${idCounter++}`,
+    name: `Festive ${theme} Theme Banner & Streamer Accent Pack`,
+    category: "Decorations",
+    quantityDescription: "1 kit (10 ft banner + 2 metallic streamers)",
+    unitPrice: 5.99,
+    estimatedPrice: 5.99,
+    isEssential: true,
+    themeRelevance: `Sets visual ambiance for ${theme}`,
+    dietaryNote: "Decorative item",
+    cymbalMartAisle: "Aisle 8 - Party Decorations",
+    notes: "Pre-strung for instant hanging"
+  });
+
+  items.push({
+    id: `item-${idCounter++}`,
+    name: "Color-Coordinated Party Balloon Arch & Confetti Kit",
+    category: "Decorations",
+    quantityDescription: "1 kit (30 assorted latex balloons + balloon tape)",
+    unitPrice: 7.49,
+    estimatedPrice: 7.49,
+    isEssential: false,
+    themeRelevance: "Festive photo-ready room backdrop",
+    dietaryNote: "Non-food decorative",
+    cymbalMartAisle: "Aisle 8 - Balloons & Party",
+    notes: "Easy self-inflating garland"
+  });
+
+  // 4. TABLEWARE
   const platePacks = Math.ceil((guests * 1.5) / 30);
+  const platePrice = 4.49;
   items.push({
     id: `item-${idCounter++}`,
     name: "Cymbal Eco-Friendly Heavy-Duty Compostable Paper Plates (30-ct)",
-    category: "Party Supplies & Tableware",
+    category: "Tableware",
     quantityDescription: `${platePacks} packs (${platePacks * 30} plates)`,
-    estimatedPrice: Number((platePacks * 4.49).toFixed(2)),
+    unitPrice: platePrice,
+    estimatedPrice: Number((platePacks * platePrice).toFixed(2)),
     isEssential: true,
-    themeRelevance: "Sturdy & environmentally responsible",
+    themeRelevance: "Sturdy dinner & dessert plates",
     dietaryNote: "Food-safe compostable",
     cymbalMartAisle: "Aisle 8 - Paper & Party Supplies",
     notes: "1.5 plates per guest for meal + sweets"
   });
+
   const napkinPacks = Math.ceil((guests * 2.5) / 50);
+  const napkinPrice = 2.29;
   items.push({
     id: `item-${idCounter++}`,
-    name: "Cymbal 2-Ply Party Beverage Napkins (50-ct, Theme Accent Colors)",
-    category: "Party Supplies & Tableware",
+    name: "Cymbal 2-Ply Party Beverage Napkins (50-ct, Theme Colors)",
+    category: "Tableware",
     quantityDescription: `${napkinPacks} packs (${napkinPacks * 50} napkins)`,
-    estimatedPrice: Number((napkinPacks * 2.29).toFixed(2)),
+    unitPrice: napkinPrice,
+    estimatedPrice: Number((napkinPacks * napkinPrice).toFixed(2)),
     isEssential: true,
     themeRelevance: `Color coordinated for ${theme}`,
     dietaryNote: "General supply",
     cymbalMartAisle: "Aisle 8 - Paper & Party Supplies",
     notes: "2-3 napkins allocated per guest"
   });
+
+  const cutleryPacks = Math.ceil(guests / 16);
+  const cutleryPrice = 3.99;
   items.push({
     id: `item-${idCounter++}`,
     name: "Cymbal Plant-Based Compostable Cutlery Set (Forks, Spoons, Knives 24-pk)",
-    category: "Party Supplies & Tableware",
-    quantityDescription: `${Math.ceil(guests / 16)} boxes`,
-    estimatedPrice: Number((Math.ceil(guests / 16) * 3.99).toFixed(2)),
+    category: "Tableware",
+    quantityDescription: `${cutleryPacks} boxes (${cutleryPacks * 24} utensils)`,
+    unitPrice: cutleryPrice,
+    estimatedPrice: Number((cutleryPacks * cutleryPrice).toFixed(2)),
     isEssential: true,
-    themeRelevance: "Convenient cleanup",
+    themeRelevance: "Mess-free dining",
     dietaryNote: "Non-toxic biodegradable",
     cymbalMartAisle: "Aisle 8 - Paper & Party Supplies",
     notes: "Full dining cutlery set"
   });
 
-  // Desserts & Sweets
-  const dessertPacks = Math.ceil(guests / 12);
+  const cupPacks = Math.ceil((guests * 2) / 30);
+  const cupPrice = 3.49;
   items.push({
     id: `item-${idCounter++}`,
-    name: "Cymbal Bakery Celebration Cupcake Assortment (12-ct Vanilla & Chocolate)",
-    category: "Desserts & Sweets",
-    quantityDescription: `${dessertPacks} packs (${dessertPacks * 12} cupcakes)`,
-    estimatedPrice: Number((dessertPacks * 8.99).toFixed(2)),
+    name: "Cymbal Recyclable Party Cold Beverage Cups 16 oz (30-ct)",
+    category: "Tableware",
+    quantityDescription: `${cupPacks} packs (${cupPacks * 30} cups)`,
+    unitPrice: cupPrice,
+    estimatedPrice: Number((cupPacks * cupPrice).toFixed(2)),
     isEssential: true,
-    themeRelevance: `Festive centerpiece treat for ${partyType}`,
-    dietaryNote: isNutFree ? "Nut-free facility bakery" : "Contains egg, dairy, wheat",
-    cymbalMartAisle: "Aisle 3 - Bakery Showcase",
-    notes: "1 cupcake per guest"
+    themeRelevance: "Durable drink cups for punch & seltzers",
+    dietaryNote: "BPA-Free recyclable",
+    cymbalMartAisle: "Aisle 8 - Paper & Party Supplies",
+    notes: "Assures 2 cups per person"
   });
 
-  // OPTIONAL / NICE-TO-HAVE ITEMS
+  // 5. PARTY SUPPLIES
   items.push({
     id: `item-${idCounter++}`,
-    name: `Festive ${theme} Decorative Garland & Table Runner Set`,
-    category: "Party Supplies & Tableware",
-    quantityDescription: "1 set (10 ft garland + matching runner)",
-    estimatedPrice: 7.99,
-    isEssential: false,
-    themeRelevance: `Elevates room atmosphere with explicit ${theme} styling`,
-    dietaryNote: "Decorative item",
-    cymbalMartAisle: "Aisle 8 - Party Decorations",
-    notes: "Optional: easily toggled off to trim budget"
+    name: "Cymbal Heavy-Duty Serving Tongs & Clear Ice Scoop Combo",
+    category: "Party supplies",
+    quantityDescription: "1 set (2 serving tongs + 1 ice scoop)",
+    unitPrice: 4.49,
+    estimatedPrice: 4.49,
+    isEssential: true,
+    themeRelevance: "Sanitary food & ice buffet serving",
+    dietaryNote: "BPA-Free reusable plastic",
+    cymbalMartAisle: "Aisle 8 - Catering & Serving",
+    notes: "Essential for hygienic guest self-service"
   });
+
+  items.push({
+    id: `item-${idCounter++}`,
+    name: "Cymbal Clean-Up Drawstring Party Trash Bags (13 Gallon, 15-ct)",
+    category: "Party supplies",
+    quantityDescription: "1 box (15 bags)",
+    unitPrice: 3.29,
+    estimatedPrice: 3.29,
+    isEssential: true,
+    themeRelevance: "Post-party quick cleanup",
+    dietaryNote: "Recycled plastic",
+    cymbalMartAisle: "Aisle 8 - Cleaning & Trash",
+    notes: "Place next to drink tubs and buffet"
+  });
+
+  // 6. OPTIONAL EXTRAS
   items.push({
     id: `item-${idCounter++}`,
     name: "Cymbal Gourmet Dipping Chocolate & Marshmallow Skewer Kit",
-    category: "Desserts & Sweets",
-    quantityDescription: "1 family fun dessert kit",
+    category: "Optional extras",
+    quantityDescription: "1 party treat station kit",
+    unitPrice: 6.49,
     estimatedPrice: 6.49,
     isEssential: false,
-    themeRelevance: "Interactive dessert station bonus",
+    themeRelevance: "Interactive dessert bonus",
     dietaryNote: "Vegetarian",
     cymbalMartAisle: "Aisle 6 - Confectionery",
-    notes: "Optional sweet treat"
+    notes: "Optional: sweet interactive station"
   });
+
   items.push({
     id: `item-${idCounter++}`,
-    name: "Decorative Beverage Tub & Clear Acrylic Ice Scoop",
-    category: "Party Supplies & Tableware",
-    quantityDescription: "1 large insulated party tub",
-    estimatedPrice: 9.99,
+    name: "Insulated Beverage Tub & Condiment Serving Caddy",
+    category: "Optional extras",
+    quantityDescription: "1 party cooler caddy",
+    unitPrice: 8.99,
+    estimatedPrice: 8.99,
     isEssential: false,
-    themeRelevance: "Keeps canned drinks easily accessible",
-    dietaryNote: "Reusable tableware",
+    themeRelevance: "Keeps drinks chilled on the display table",
+    dietaryNote: "Reusable houseware",
     cymbalMartAisle: "Aisle 8 - Seasonal & Housewares",
-    notes: "Optional: reuse for future parties"
+    notes: "Optional: easily toggled to save budget"
   });
 
   const essentialsTotal = items
@@ -344,28 +445,28 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
     items: items.map(it => ({ ...it, isEnabled: true, isChecked: false })),
     assumptions: [
       `Guest baseline: planned for ${guests} guests for an estimated 3 to 4 hour gathering.`,
-      `Drink allocation: calculated ~2 to 3 non-alcoholic / seltzer beverages per guest plus ice chilling.`,
-      `Food portions: budgeted 1.5 main portions per person plus abundant fresh fruit, chips, and dips.`,
-      `Tableware ratios: included 1.5 heavy-duty plates and 2.5 napkins per guest to comfortably cover dinner and dessert.`,
-      dietary.includes("Gluten-Free") ? "Dietary: allocated dedicated gluten-free packaged substitutes to prevent cross-contact." : "Standard variety balanced across savory, sweet, and hydration.",
-      `Budget management: current total is $${estimatedTotal} against your $${budget} target (${remainingBudget >= 0 ? `$${remainingBudget} surplus remaining` : `$${Math.abs(remainingBudget)} slightly above budget (toggle optional items to save $${optionalsTotal.toFixed(2)})`}).`
+      `Drinks allocation: budgeted ~2 to 3 seltzers/juices per guest plus 10 lbs ice for drink chilling.`,
+      `Food portions: scaled 1.5 main portions per person plus ample fresh fruit, chips, guacamole, and cupcakes.`,
+      `Tableware ratios: included 1.5 heavy-duty compostable plates and 2.5 napkins per guest.`,
+      dietary.includes("Gluten-Free") ? "Dietary accommodation: included dedicated certified Gluten-Free items to prevent cross-contact." : "Balanced variety across savory, sweet, and hydration.",
+      `Budget reconciliation: total estimated at $${estimatedTotal} against your $${budget} budget (${remainingBudget >= 0 ? `$${remainingBudget} surplus remaining` : `$${Math.abs(remainingBudget)} over target — optional extras can be toggled off to save $${optionalsTotal.toFixed(2)}`}).`
     ],
     themeHighlights: [
-      `Decor & tableware aligned with the "${theme}" visual palette and mood.`,
-      `Curated snack assortment that matches a relaxed, high-energy ${partyType} style.`,
-      `Signature color-accented napkins and celebratory dessert showcase.`
+      `Decor & tableware styled around "${theme}" colors and aesthetic.`,
+      `Curated snack & drink menu matching a festive ${partyType}.`,
+      `Celebration cupcakes and accent banner centerpiece.`
     ],
     dietaryAccommodations: isGF || isVeg || isNutFree
       ? [
-          isGF ? "Included certified Gluten-Free buns / pizza and naturally GF fruit & dips." : null,
-          isVeg ? "Dedicated plant-based protein entrees and vegetarian snack boards." : null,
+          isGF ? "Included certified Gluten-Free buns/pizza and naturally GF fruit & chips." : null,
+          isVeg ? "Dedicated plant-based entrees and vegetarian snack platters." : null,
           isNutFree ? "Nut-safe bakery cupcakes and allergen-labeled snacks." : null,
         ].filter(Boolean) as string[]
-      : ["All items are standard supermarket favorites with clear ingredient labeling on packages."],
+      : ["All items are standard supermarket favorites with clear ingredient labeling."],
     proTips: [
-      "Chill beverages in the refrigerator the night before so the party ice lasts twice as long in coolers.",
-      "Pre-wash and skewer fruit bowls 2 hours prior to guest arrival for easy grab-and-go snacking.",
-      "Place paper plates & napkins at both ends of the buffet line to prevent guest bottlenecks."
+      "Chill beverages in the refrigerator the night before so party ice lasts longer in tubs.",
+      "Pre-slice fruit and set up the taco/snack bar 30 minutes before guests arrive.",
+      "Set compostable plates and napkins at both ends of the table to speed up serving."
     ],
     estimatedTotal,
     essentialsTotal: Number(essentialsTotal.toFixed(2)),
@@ -377,167 +478,213 @@ function generateFallbackShoppingPlan(details: any, userPrompt?: string) {
   };
 }
 
-// API: Check Health
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", service: "CymbalMart Party Planner Agent" });
-});
-
-// API: Conversational Agent Endpoint
+// API: Conversational Agent Endpoint with 4-Stage Flow
 app.post("/api/chat", async (req, res) => {
   try {
-    const { messages = [], partyDetails = {}, userMessage = "", forceGeneratePlan = false } = req.body;
-
+    const { messages = [], partyDetails = {}, userMessage = "", forceGeneratePlan = false, currentStage = "define" } = req.body;
     const gemini = getGeminiClient();
 
-    // Check missing critical fields
-    const missing: string[] = [];
-    if (!partyDetails.partyType) missing.push("partyType");
-    if (!partyDetails.guestCount) missing.push("guestCount");
-    if (!partyDetails.budget) missing.push("budget");
-    if (!partyDetails.theme) missing.push("theme");
-    if (!partyDetails.date) missing.push("date");
-    if (!partyDetails.dietaryRestrictions || partyDetails.dietaryRestrictions.length === 0) missing.push("dietaryRestrictions");
+    // Extract updated details from user message locally as base / fallback
+    const text = (userMessage || "").toLowerCase();
+    const updatedDetails = { ...partyDetails };
 
-    // If Gemini is not available, execute smart local logic
-    if (!gemini) {
-      console.log("Using smart local fallback agent logic (No GEMINI_API_KEY set)");
+    if (text.match(/(\d+)\s*(guests?|people|kids|adults|friends|attendees)/i)) {
+      const match = text.match(/(\d+)\s*(guests?|people|kids|adults|friends|attendees)/i);
+      if (match) updatedDetails.guestCount = parseInt(match[1], 10);
+    }
+    if (text.match(/\$(\d+)/) || text.match(/budget.*?(\d+)/i) || text.match(/(\d+)\s*dollars/i)) {
+      const match = text.match(/\$(\d+)/) || text.match(/budget.*?(\d+)/i) || text.match(/(\d+)\s*dollars/i);
+      if (match) updatedDetails.budget = parseInt(match[1], 10);
+    }
+    if (text.includes("bbq") || text.includes("barbecue") || text.includes("cookout")) updatedDetails.partyType = "Backyard BBQ";
+    else if (text.includes("birthday")) updatedDetails.partyType = "Birthday Party";
+    else if (text.includes("cocktail") || text.includes("tapas")) updatedDetails.partyType = "Cocktail Party";
+    else if (text.includes("game night")) updatedDetails.partyType = "Game Night";
+    else if (text.includes("graduation")) updatedDetails.partyType = "Graduation Party";
+    else if (text.includes("dinner")) updatedDetails.partyType = "Dinner Party";
+    else if (text.includes("kids party") || text.includes("children")) updatedDetails.partyType = "Kids Birthday";
 
-      // Extract details from message if user spoke
-      const text = userMessage.toLowerCase();
-      const updatedDetails = { ...partyDetails };
+    if (text.includes("tropical") || text.includes("luau")) updatedDetails.theme = "Tropical Luau";
+    else if (text.includes("superhero")) updatedDetails.theme = "Superhero Adventure";
+    else if (text.includes("retro") || text.includes("80s") || text.includes("disco")) updatedDetails.theme = "Retro Disco";
+    else if (text.includes("fiesta") || text.includes("taco")) updatedDetails.theme = "Fiesta Taco Bar";
+    else if (text.includes("gold") || text.includes("elegant")) updatedDetails.theme = "Elegant Gold & White";
+    else if (text.includes("sports") || text.includes("tailgate") || text.includes("super bowl")) updatedDetails.theme = "Tailgate & Game Day";
 
-      if (text.match(/(\d+)\s*(guests?|people|kids|adults|friends)/i)) {
-        const match = text.match(/(\d+)\s*(guests?|people|kids|adults|friends)/i);
-        if (match) updatedDetails.guestCount = parseInt(match[1], 10);
-      }
-      if (text.match(/\$(\d+)/) || text.match(/budget.*?(\d+)/i) || text.match(/(\d+)\s*dollars/i)) {
-        const match = text.match(/\$(\d+)/) || text.match(/budget.*?(\d+)/i) || text.match(/(\d+)\s*dollars/i);
-        if (match) updatedDetails.budget = parseInt(match[1], 10);
-      }
-      if (text.includes("bbq") || text.includes("barbecue")) updatedDetails.partyType = "Backyard BBQ";
-      else if (text.includes("birthday")) updatedDetails.partyType = "Birthday Party";
-      else if (text.includes("cocktail")) updatedDetails.partyType = "Cocktail Party";
-      else if (text.includes("game night")) updatedDetails.partyType = "Game Night";
-      else if (text.includes("graduation")) updatedDetails.partyType = "Graduation Party";
-      else if (text.includes("dinner")) updatedDetails.partyType = "Dinner Party";
-
-      if (text.includes("tropical") || text.includes("luau")) updatedDetails.theme = "Tropical Luau";
-      else if (text.includes("superhero")) updatedDetails.theme = "Superhero Adventure";
-      else if (text.includes("retro") || text.includes("80s") || text.includes("disco")) updatedDetails.theme = "Retro Disco";
-      else if (text.includes("fiesta") || text.includes("taco")) updatedDetails.theme = "Fiesta Taco Bar";
-      else if (text.includes("gold") || text.includes("elegant")) updatedDetails.theme = "Elegant Gold & White";
-      else if (text.includes("sports") || text.includes("tailgate") || text.includes("super bowl")) updatedDetails.theme = "Tailgate & Game Day";
-
-      if (text.includes("gluten-free") || text.includes("gluten free") || text.includes("celiac")) {
-        updatedDetails.dietaryRestrictions = Array.from(new Set([...(updatedDetails.dietaryRestrictions || []), "Gluten-Free"]));
-      }
-      if (text.includes("vegan")) {
-        updatedDetails.dietaryRestrictions = Array.from(new Set([...(updatedDetails.dietaryRestrictions || []), "Vegan"]));
-      }
-      if (text.includes("vegetarian") || text.includes("veggie")) {
-        updatedDetails.dietaryRestrictions = Array.from(new Set([...(updatedDetails.dietaryRestrictions || []), "Vegetarian"]));
-      }
-      if (text.includes("nut allergy") || text.includes("peanut allergy") || text.includes("nut-free")) {
-        updatedDetails.dietaryRestrictions = Array.from(new Set([...(updatedDetails.dietaryRestrictions || []), "Nut Allergy"]));
-      }
-      if (text.includes("no dietary") || text.includes("none") || text.includes("no restrictions") || text.includes("no allergies")) {
-        updatedDetails.dietaryRestrictions = ["None"];
-      }
-
-      if (text.includes("saturday") || text.includes("sunday") || text.includes("this weekend") || text.includes("next week") || text.includes("tomorrow")) {
-        updatedDetails.date = userMessage;
-      }
-
-      // Check remaining missing fields
-      const currentMissing: string[] = [];
-      if (!updatedDetails.partyType) currentMissing.push("partyType");
-      if (!updatedDetails.guestCount) currentMissing.push("guestCount");
-      if (!updatedDetails.budget) currentMissing.push("budget");
-      if (!updatedDetails.theme) currentMissing.push("theme");
-      if (!updatedDetails.date) currentMissing.push("date");
-      if (!updatedDetails.dietaryRestrictions || updatedDetails.dietaryRestrictions.length === 0) currentMissing.push("dietaryRestrictions");
-
-      // Decide if we should generate the plan
-      const shouldGenerate = forceGeneratePlan || (currentMissing.length === 0) || (currentMissing.length <= 1 && (updatedDetails.guestCount && updatedDetails.budget));
-
-      if (shouldGenerate) {
-        const plan = generateFallbackShoppingPlan(updatedDetails, userMessage);
-        return res.json({
-          replyText: `🎉 Fantastic! I've crafted your tailored CymbalMart party shopping plan for **${updatedDetails.guestCount || 12} guests** with your **$${updatedDetails.budget || 150} budget**.\n\nI've categorized all grocery and party supply items, calculated realistic quantities per person, separated essential vs. optional items for flexible budget control, and highlighted all assumptions below!`,
-          extractedDetails: updatedDetails,
-          missingFields: [],
-          shoppingPlan: plan,
-          quickReplies: ["Looks great! Show in-store aisle mode", "Make it more budget-friendly", "Add extra snacks", "Add cocktail mixer ideas"]
-        });
-      } else {
-        // Formulate friendly conversational clarification
-        let reply = "I'd love to help you build the perfect CymbalMart party shopping list! ";
-        let quickReplies: string[] = [];
-
-        if (!updatedDetails.partyType) {
-          reply += "What type of party are you hosting?";
-          quickReplies = ["Birthday Bash", "Backyard BBQ", "Cocktail Party", "Game Night", "Kids Birthday", "Graduation"];
-        } else if (!updatedDetails.guestCount) {
-          reply += `Exciting! For your ${updatedDetails.partyType}, how many guests are you expecting?`;
-          quickReplies = ["8-10 guests", "15 guests", "20-25 guests", "35+ guests"];
-        } else if (!updatedDetails.budget) {
-          reply += `Got it, ${updatedDetails.guestCount} guests for the ${updatedDetails.partyType}. What is your approximate target budget?`;
-          quickReplies = ["$100 (Budget Saver)", "$150 (Standard)", "$250 (Party Plus)", "$400 (Deluxe)"];
-        } else if (!updatedDetails.theme) {
-          reply += `We can match all party supplies and specialty foods to a theme. Do you have a specific theme or vibe in mind?`;
-          quickReplies = ["Tropical Luau", "Retro Disco", "Fiesta Taco Bar", "Casual & Modern", "Superhero", "Tailgate / Game Day"];
-        } else if (!updatedDetails.dietaryRestrictions || updatedDetails.dietaryRestrictions.length === 0) {
-          reply += `Are there any dietary restrictions or food allergies among your guests (e.g. Gluten-Free, Vegan, Nut-free)?`;
-          quickReplies = ["No restrictions (All Good)", "Gluten-Free", "Vegetarian", "Vegan", "Nut Allergy", "Dairy-Free"];
-        } else if (!updatedDetails.date) {
-          reply += `When is the party taking place? (e.g. This Saturday, Next Weekend, or a specific date)`;
-          quickReplies = ["This Saturday", "This Sunday", "Next Weekend", "In 2 Weeks"];
-        }
-
-        return res.json({
-          replyText: reply,
-          extractedDetails: updatedDetails,
-          missingFields: currentMissing,
-          shoppingPlan: null,
-          quickReplies
-        });
-      }
+    if (text.includes("gluten-free") || text.includes("gluten free") || text.includes("celiac")) {
+      updatedDetails.dietaryRestrictions = Array.from(new Set([...(updatedDetails.dietaryRestrictions || []), "Gluten-Free"]));
+    }
+    if (text.includes("vegan")) {
+      updatedDetails.dietaryRestrictions = Array.from(new Set([...(updatedDetails.dietaryRestrictions || []), "Vegan"]));
+    }
+    if (text.includes("vegetarian") || text.includes("veggie")) {
+      updatedDetails.dietaryRestrictions = Array.from(new Set([...(updatedDetails.dietaryRestrictions || []), "Vegetarian"]));
+    }
+    if (text.includes("nut allergy") || text.includes("peanut allergy") || text.includes("nut-free")) {
+      updatedDetails.dietaryRestrictions = Array.from(new Set([...(updatedDetails.dietaryRestrictions || []), "Nut Allergy"]));
+    }
+    if (text.includes("no dietary") || text.includes("no restrictions") || text.includes("no allergies") || text.includes("all good") || text.includes("none")) {
+      updatedDetails.dietaryRestrictions = ["None"];
     }
 
-    // Use Gemini 3.7 Flash
+    if (text.includes("saturday") || text.includes("sunday") || text.includes("this weekend") || text.includes("next week") || text.includes("tomorrow") || text.includes("oct") || text.includes("nov") || text.includes("dec")) {
+      updatedDetails.date = userMessage;
+    }
+
+    // Determine Stage 1 missing fields among the 7 required
+    const requiredSpecs = [
+      { key: "partyType", label: "Party type", val: updatedDetails.partyType },
+      { key: "guestCount", label: "Number of guests", val: updatedDetails.guestCount },
+      { key: "date", label: "Date", val: updatedDetails.date },
+      { key: "theme", label: "Theme", val: updatedDetails.theme },
+      { key: "budget", label: "Budget", val: updatedDetails.budget },
+      { key: "dietaryRestrictions", label: "Dietary restrictions", val: updatedDetails.dietaryRestrictions?.length ? updatedDetails.dietaryRestrictions : null },
+      { key: "specialRequests", label: "Special requests", val: updatedDetails.specialRequests || null }
+    ];
+
+    const missingSpecs = requiredSpecs.filter(s => s.val === null || s.val === undefined || s.val === "");
+    const providedSpecs = requiredSpecs.filter(s => s.val !== null && s.val !== undefined && s.val !== "");
+
+    // Check user intent for Stage 3 Refine or Stage 4 Finalize
+    const isCheckoutOrFinalize = text.includes("finalize") || text.includes("checkout") || text.includes("ready to order") || text.includes("confirm order") || text.includes("done");
+    const isRefineRequest = text.includes("reduce cost") || text.includes("cheaper") || text.includes("add item") || text.includes("remove item") || text.includes("replace") || text.includes("change theme") || text.includes("change guest") || text.includes("change budget") || text.includes("more guests") || text.includes("less guests") || text.includes("trim budget") || text.includes("increase budget");
+
+    // Local Fallback if Gemini is unavailable
+    if (!gemini) {
+      console.log("Using smart local 4-stage agent engine");
+
+      if (isCheckoutOrFinalize && (updatedDetails.guestCount || forceGeneratePlan)) {
+        const plan = generateFallbackShoppingPlan(updatedDetails, userMessage);
+        return res.json({
+          replyText: `🎉 **Stage 4: Finalize & Checkout**\n\nHere is your final concise shopping plan for **${plan.partySummary.guestCount} guests** with an estimated total of **$${plan.estimatedTotal.toFixed(2)}** ($${plan.costPerGuest.toFixed(2)} per guest).\n\n• Food (${plan.items.filter((i: any) => i.category === 'Food').length} items)\n• Drinks (${plan.items.filter((i: any) => i.category === 'Drinks').length} items)\n• Decorations (${plan.items.filter((i: any) => i.category === 'Decorations').length} items)\n• Tableware (${plan.items.filter((i: any) => i.category === 'Tableware').length} items)\n• Party supplies (${plan.items.filter((i: any) => i.category === 'Party supplies').length} items)\n• Optional extras (${plan.items.filter((i: any) => i.category === 'Optional extras').length} items)\n\nAll items are mapped directly to CymbalMart aisles for fast curbside pickup or store trip!`,
+          extractedDetails: updatedDetails,
+          missingFields: [],
+          stage: "finalize",
+          shoppingPlan: plan,
+          quickReplies: ["Open Finalize & Checkout", "Review In-Store Mode", "Change guest count", "Adjust budget"]
+        });
+      }
+
+      // If we have essential parameters or forced plan, show Stage 2 / Stage 3
+      const hasCore = updatedDetails.partyType && updatedDetails.guestCount && updatedDetails.budget;
+      if (forceGeneratePlan || hasCore) {
+        const plan = generateFallbackShoppingPlan(updatedDetails, userMessage);
+        return res.json({
+          replyText: `📋 **Stage 2: Review Shopping List & Stage 3: Refine**\n\nI've generated your categorized shopping plan for **${updatedDetails.guestCount || 12} guests** with an estimated total of **$${plan.estimatedTotal.toFixed(2)}** (Target: $${plan.budget}).\n\nEvery item includes exact quantities, unit prices, subtotal calculations, and essential vs. optional tags across all 6 categories (Food, Drinks, Decorations, Tableware, Party supplies, and Optional extras).\n\n**Would you like to refine anything?**\n• 💰 Reduce the cost\n• ➕ Add items\n• ➖ Remove items\n• 🔄 Replace items\n• 🎨 Change the theme\n• 👥 Change the guest count\n• 💵 Change the budget`,
+          extractedDetails: updatedDetails,
+          missingFields: missingSpecs.map(m => m.key),
+          stage: "review",
+          shoppingPlan: plan,
+          quickReplies: ["💰 Reduce the cost", "➕ Add items", "🔄 Replace items", "👥 Change guest count", "🎨 Change theme", "🛒 Finalize & Checkout"]
+        });
+      }
+
+      // Stage 1: Define Event - Only ask for what is missing!
+      let replyText = "👋 Welcome to CymbalMart's Party Planner!\n\n";
+      if (providedSpecs.length > 0) {
+        replyText += `Here is what I have recorded so far:\n` + providedSpecs.map(s => `✓ **${s.label}**: ${Array.isArray(s.val) ? s.val.join(', ') : s.val}`).join('\n') + `\n\n`;
+      }
+      replyText += `To complete **Stage 1 (Define Event)**, please provide the remaining details:\n`;
+      replyText += missingSpecs.map(m => `• **${m.label}**`).join('\n');
+
+      let quickReplies: string[] = [];
+      if (!updatedDetails.partyType) {
+        quickReplies = ["Birthday Party", "Backyard BBQ", "Cocktail Party", "Game Night", "Kids Party"];
+      } else if (!updatedDetails.guestCount) {
+        quickReplies = ["10 guests", "15 guests", "20 guests", "30 guests"];
+      } else if (!updatedDetails.budget) {
+        quickReplies = ["$100 budget", "$150 budget", "$250 budget", "$350 budget"];
+      } else if (!updatedDetails.theme) {
+        quickReplies = ["Tropical Luau", "Retro Disco", "Fiesta Taco Bar", "Casual Cookout", "Superhero"];
+      } else if (!updatedDetails.dietaryRestrictions || updatedDetails.dietaryRestrictions.length === 0) {
+        quickReplies = ["No restrictions (None)", "Gluten-Free", "Vegetarian", "Vegan", "Nut Allergy"];
+      } else if (!updatedDetails.date) {
+        quickReplies = ["This Saturday", "This Sunday", "Next Weekend", "Oct 15th"];
+      } else {
+        quickReplies = ["Generate Shopping List", "No special requests", "Add mocktail recipe", "Compostable supplies"];
+      }
+
+      return res.json({
+        replyText,
+        extractedDetails: updatedDetails,
+        missingFields: missingSpecs.map(m => m.key),
+        stage: "define",
+        shoppingPlan: null,
+        quickReplies
+      });
+    }
+
+    // Gemini 3.7 Flash Engine with strict 4-stage instructions
     const systemInstruction = `You are the CymbalMart Party Planner Shopping Agent.
-CymbalMart is a friendly, modern, high-quality neighborhood supermarket with fresh produce, full butcher deli, bakery, party supplies, and beverage sections.
+CymbalMart is a modern neighborhood supermarket with full grocery, bakery, deli, produce, beverage, tableware, and party supplies aisles.
 
-Your job is to assist busy customers plan parties and create practical, budget-conscious grocery and party shopping lists based on:
-1. Party type (e.g., Birthday, Backyard BBQ, Game Night, Cocktail Party, Graduation, Dinner Party, Kids Birthday, Housewarming, etc.)
+You guide the customer through four distinct stages:
+
+--- STAGE 1: DEFINE EVENT ---
+Collect the 7 event parameters:
+1. Party type (e.g. Birthday, Backyard BBQ, Cocktail Party, Game Night, Graduation, Dinner)
 2. Number of guests (integer)
-3. Date (e.g., "This Saturday", "Oct 12")
-4. Theme (e.g., Tropical Luau, Retro Disco, Fiesta Taco Bar, Superhero, Elegant Gold & White, Tailgate)
-5. Budget (in USD, e.g., $150)
-6. Dietary restrictions (e.g., Gluten-Free, Vegan, Vegetarian, Nut Allergy, Dairy-Free, None)
-7. Special requests (e.g., signature mocktail/cocktail recipe, eco-friendly compostable supplies, extra ice, kid-friendly games)
+3. Date (e.g. "This Saturday", "Oct 12")
+4. Theme (e.g. Tropical Luau, Retro Disco, Fiesta Taco Bar, Superhero, Elegant Gold)
+5. Budget (in USD, e.g. $150)
+6. Dietary restrictions (e.g. Gluten-Free, Vegan, Vegetarian, Nut Allergy, None)
+7. Special requests (e.g. mocktail recipes, eco-friendly tableware, extra ice)
 
-RULES:
-- Keep interactions simple, warm, helpful, and conversational.
-- Identify missing information. If crucial information (especially party type, guest count, budget, theme, dietary restrictions) is missing, politely and concisely ask for it in 'replyText' and include 'suggestedQuickReplies' to make it effortless for the customer.
-- When sufficient information is available OR if the user asks to generate the shopping list, generate a complete, practical 'shoppingPlan' matching the schema.
-- The shopping list MUST:
-  * Group items into realistic supermarket categories: "Mains & Proteins", "Fresh Produce", "Bakery & Deli", "Beverages & Bar", "Snacks & Appetizers", "Party Supplies & Tableware", "Desserts & Sweets", "Ice & Essentials".
-  * Recommend quantities scaled precisely to the guest count (e.g., "3 packs (24 patties total for 15 guests)", "2 bags (10 lbs each)").
-  * Incorporate the party theme into appropriate food, drinks, and tableware items.
-  * Stay strictly within or respect the user's budget (providing estimated realistic item prices).
-  * Clearly prioritize essential items ('isEssential': true for main food, core drinks, basic plates/napkins) over optional items ('isEssential': false for decorative banners, specialty cocktail garnishes, extra novelty sweets).
-  * Provide estimated item prices (USD) and calculate totals.
-  * Include clear, realistic ASSUMPTIONS (e.g., portion sizes per guest, 2-3 drinks per person over 3 hours, 1.5 paper plates per person, ice calculations).
-  * Include dietary accommodations specifically tailored to any stated allergies or restrictions.
-  * Assign realistic CymbalMart aisle locations (e.g., "Aisle 1 - Fresh Produce", "Aisle 8 - Paper & Party Supplies", "Aisle 7 - Beverages").
+CRITICAL RULE FOR STAGE 1:
+- DO NOT ask all questions again if the user has already provided the information!
+- In your replyText, briefly acknowledge what is already known, and ONLY ask for the missing items concisely.
+- When key parameters (party type, guests, budget) are known or when user requests list generation, immediately advance to Stage 2.
+
+--- STAGE 2: REVIEW SHOPPING LIST ---
+Generate a comprehensive, categorized shopping plan.
+The list MUST group items into these EXACT 6 CATEGORIES:
+1. "Food" (Mains, produce, snacks, bakery, desserts)
+2. "Drinks" (Seltzers, juices, craft sodas, party ice)
+3. "Decorations" (Theme banner, garlands, balloon kit)
+4. "Tableware" (Compostable plates, napkins, cutlery, cold cups)
+5. "Party supplies" (Serving tongs, ice scoop, trash cleanup bags)
+6. "Optional extras" (Interactive treat kits, beverage tubs, photo props)
+
+FOR EVERY ITEM INCLUDE:
+- name: Specific item name with CymbalMart brand or supermarket name
+- category: Exactly one of "Food", "Drinks", "Decorations", "Tableware", "Party supplies", "Optional extras"
+- quantityDescription: Realistic quantity scaled to guest count (e.g. "3 packs (18 patties for 12 guests)")
+- unitPrice: Realistic estimated unit price (e.g. 11.99)
+- estimatedPrice: Subtotal = quantity * unitPrice (e.g. 35.97)
+- isEssential: true for core food/drinks/tableware; false for extra decor or specialty items
+- cymbalMartAisle: e.g. "Aisle 1 - Meat & Poultry", "Aisle 7 - Beverages", "Aisle 8 - Paper & Party Supplies"
+- notes: Mathematical portion or serving notes
+- themeRelevance: Theme link
+- dietaryNote: Allergen / dietary note
+
+Calculate estimatedTotal (sum of all items), essentialsTotal, optionalsTotal, remainingBudget, and costPerGuest.
+
+--- STAGE 3: REFINE ---
+Prompt the customer explicitly on whether they want to:
+- Reduce the cost
+- Add items
+- Remove items
+- Replace items
+- Change the theme
+- Change the guest count
+- Change the budget
+
+After every change requested by the user, recalculate the shopping list, portions, and estimated total immediately!
+
+--- STAGE 4: FINALIZE ---
+When user is satisfied or asks to checkout/finalize, provide a final concise shopping list and estimated total suitable for checkout with store pickup / delivery details.
+
+STYLE GUIDELINES:
+- Warm, concise, friendly, and practical for a busy party host.
+- Always provide relevant suggestedQuickReplies.
 `;
 
     const promptContext = {
       conversationHistory: messages.slice(-8),
       currentPartyDetails: partyDetails,
       latestUserMessage: userMessage,
-      forceGeneratePlan
+      forceGeneratePlan,
+      currentStage
     };
 
     const response = await gemini.models.generateContent({
@@ -551,7 +698,12 @@ RULES:
           properties: {
             replyText: {
               type: Type.STRING,
-              description: "Warm, conversational response to the customer."
+              description: "Concise, friendly response guiding through the current stage."
+            },
+            currentStage: {
+              type: Type.STRING,
+              enum: ["define", "review", "refine", "finalize"],
+              description: "The current workflow stage."
             },
             extractedDetails: {
               type: Type.OBJECT,
@@ -566,18 +718,15 @@ RULES:
                   items: { type: Type.STRING }
                 },
                 specialRequests: { type: Type.STRING }
-              },
-              description: "Updated cumulative party details extracted from context."
+              }
             },
             missingFields: {
               type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: "List of fields still missing or needed."
+              items: { type: Type.STRING }
             },
             suggestedQuickReplies: {
               type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: "3-5 concise button reply chips for the user to tap."
+              items: { type: Type.STRING }
             },
             shoppingPlan: {
               type: Type.OBJECT,
@@ -590,23 +739,25 @@ RULES:
                     properties: {
                       id: { type: Type.STRING },
                       name: { type: Type.STRING },
-                      category: { type: Type.STRING },
+                      category: { 
+                        type: Type.STRING,
+                        description: "Must be one of: Food, Drinks, Decorations, Tableware, Party supplies, Optional extras"
+                      },
                       quantityDescription: { type: Type.STRING },
-                      estimatedPrice: { type: Type.NUMBER },
                       unitPrice: { type: Type.NUMBER },
+                      estimatedPrice: { type: Type.NUMBER, description: "Estimated subtotal" },
                       isEssential: { type: Type.BOOLEAN },
                       themeRelevance: { type: Type.STRING },
                       dietaryNote: { type: Type.STRING },
                       cymbalMartAisle: { type: Type.STRING },
                       notes: { type: Type.STRING }
                     },
-                    required: ["id", "name", "category", "quantityDescription", "estimatedPrice", "isEssential"]
+                    required: ["id", "name", "category", "quantityDescription", "unitPrice", "estimatedPrice", "isEssential"]
                   }
                 },
                 assumptions: {
                   type: Type.ARRAY,
-                  items: { type: Type.STRING },
-                  description: "Explicit bullet points explaining planning math and assumptions."
+                  items: { type: Type.STRING }
                 },
                 themeHighlights: {
                   type: Type.ARRAY,
@@ -623,7 +774,7 @@ RULES:
               }
             }
           },
-          required: ["replyText", "extractedDetails"]
+          required: ["replyText", "extractedDetails", "currentStage"]
         }
       }
     });
@@ -633,12 +784,31 @@ RULES:
 
     let finalShoppingPlan = null;
     if (parsed.shoppingPlan && parsed.shoppingPlan.items && parsed.shoppingPlan.items.length > 0) {
-      const planItems = parsed.shoppingPlan.items.map((it: any, idx: number) => ({
-        ...it,
-        id: it.id || `item-${idx + 1}`,
-        isEnabled: true,
-        isChecked: false
-      }));
+      const planItems = parsed.shoppingPlan.items.map((it: any, idx: number) => {
+        // Map category to standard 6 if needed
+        let cat = it.category;
+        if (!["Food", "Drinks", "Decorations", "Tableware", "Party supplies", "Optional extras"].includes(cat)) {
+          if (cat.toLowerCase().includes("bev") || cat.toLowerCase().includes("drink") || cat.toLowerCase().includes("ice")) cat = "Drinks";
+          else if (cat.toLowerCase().includes("decor")) cat = "Decorations";
+          else if (cat.toLowerCase().includes("table") || cat.toLowerCase().includes("plate") || cat.toLowerCase().includes("napkin")) cat = "Tableware";
+          else if (cat.toLowerCase().includes("suppl") || cat.toLowerCase().includes("clean") || cat.toLowerCase().includes("tong")) cat = "Party supplies";
+          else if (cat.toLowerCase().includes("opt") || cat.toLowerCase().includes("extra")) cat = "Optional extras";
+          else cat = "Food";
+        }
+
+        const unit = Number(it.unitPrice) || Number(it.estimatedPrice) || 3.99;
+        const est = Number(it.estimatedPrice) || unit;
+
+        return {
+          ...it,
+          id: it.id || `item-${idx + 1}`,
+          category: cat,
+          unitPrice: unit,
+          estimatedPrice: est,
+          isEnabled: true,
+          isChecked: false
+        };
+      });
 
       const essentialsTotal = planItems
         .filter((i: any) => i.isEssential)
@@ -651,16 +821,16 @@ RULES:
       const guests = Number(mergedDetails.guestCount) || 12;
 
       finalShoppingPlan = {
-        title: parsed.shoppingPlan.title || `${mergedDetails.theme || "Party"} Shopping Plan`,
+        title: parsed.shoppingPlan.title || `${mergedDetails.theme || "Party"} CymbalMart Shopping Plan`,
         partySummary: mergedDetails,
         items: planItems,
         assumptions: parsed.shoppingPlan.assumptions || [
-          `Calculated for ${guests} guests.`,
-          `Estimated 2 drinks per guest.`,
-          `Prioritized essential items to fit within $${budget} budget.`
+          `Calculated for ${guests} guests for an estimated 3-hour event.`,
+          `Estimated 2 drinks per guest plus party ice.`,
+          `Prioritized essential items to fit within $${budget} target budget.`
         ],
         themeHighlights: parsed.shoppingPlan.themeHighlights || [`Themed menu items suited for ${mergedDetails.theme || "celebration"}`],
-        dietaryAccommodations: parsed.shoppingPlan.dietaryAccommodations || ["Dietary preferences considered"],
+        dietaryAccommodations: parsed.shoppingPlan.dietaryAccommodations || ["Dietary preferences accommodated"],
         proTips: parsed.shoppingPlan.proTips || ["Check in-store weekly specials at CymbalMart for extra savings!"],
         estimatedTotal,
         essentialsTotal: Number(essentialsTotal.toFixed(2)),
@@ -670,27 +840,28 @@ RULES:
         costPerGuest: Number((estimatedTotal / guests).toFixed(2)),
         createdAt: new Date().toISOString()
       };
-    } else if (forceGeneratePlan) {
+    } else if (forceGeneratePlan || isRefineRequest) {
       finalShoppingPlan = generateFallbackShoppingPlan(mergedDetails, userMessage);
     }
 
     res.json({
-      replyText: parsed.replyText || "Here is your party plan!",
+      replyText: parsed.replyText || "I've updated your party planning specs!",
+      stage: parsed.currentStage || "define",
       extractedDetails: mergedDetails,
       missingFields: parsed.missingFields || [],
-      quickReplies: parsed.suggestedQuickReplies || ["Looks great!", "Adjust budget", "Add more drinks", "Review items"],
+      quickReplies: parsed.suggestedQuickReplies || (finalShoppingPlan ? ["💰 Reduce the cost", "➕ Add items", "🔄 Replace items", "👥 Change guest count", "🛒 Finalize & Checkout"] : ["15 guests", "$150 budget", "This Saturday", "Tropical Luau"]),
       shoppingPlan: finalShoppingPlan
     });
 
   } catch (error: any) {
     console.error("Error in /api/chat:", error);
-    // Graceful fallback so user never gets stuck
     const fallbackPlan = generateFallbackShoppingPlan(req.body.partyDetails || {});
     res.json({
       replyText: "I've organized your party details and generated a complete CymbalMart shopping plan with estimated quantities and budget breakdowns!",
+      stage: "review",
       extractedDetails: req.body.partyDetails || {},
       missingFields: [],
-      quickReplies: ["Review shopping list", "Modify items", "Adjust budget"],
+      quickReplies: ["💰 Reduce the cost", "➕ Add items", "🔄 Replace items", "🛒 Finalize & Checkout"],
       shoppingPlan: fallbackPlan
     });
   }

@@ -24,7 +24,12 @@ import {
   ShieldCheck,
   ArrowLeftRight,
   CreditCard,
-  ArrowRight
+  ArrowRight,
+  TrendingDown,
+  MapPin,
+  Utensils,
+  Wine,
+  Sparkle
 } from 'lucide-react';
 import { ShoppingPlan, ShoppingItem, PartyDetails } from '../types';
 import { ReplaceItemModal } from './ReplaceItemModal';
@@ -50,7 +55,7 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
   const [itemToReplace, setItemToReplace] = useState<ShoppingItem | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
 
-  // Toggle item enabled state (especially for optional items to trim budget)
+  // Toggle item enabled state
   const toggleItemEnabled = (id: string) => {
     const updatedItems = plan.items.map(item => {
       if (item.id === id) {
@@ -113,8 +118,75 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
     });
   };
 
-  // Group items by category
-  const categories: string[] = Array.from(new Set<string>(plan.items.map(i => i.category)));
+  // Group items by category (Strict 6 categories or dynamically populated)
+  const categoryOrder: string[] = ['Food', 'Drinks', 'Decorations', 'Tableware', 'Party supplies', 'Optional extras'];
+  const presentCategories = Array.from(new Set<string>(plan.items.map(i => i.category)));
+  const sortedCategories = [
+    ...categoryOrder.filter(c => presentCategories.includes(c)),
+    ...presentCategories.filter(c => !categoryOrder.includes(c))
+  ];
+  const categories: string[] = sortedCategories.length > 0 ? sortedCategories : presentCategories;
+
+  // Quick Refine Handlers
+  const handleQuickReduceCost = () => {
+    const hasActiveOptionals = plan.items.some(i => !i.isEssential && i.isEnabled !== false);
+    if (hasActiveOptionals) {
+      const updatedItems = plan.items.map(i => (!i.isEssential ? { ...i, isEnabled: false } : i));
+      recalculatePlan(updatedItems);
+    } else {
+      const updatedItems = plan.items.map(i => ({
+        ...i,
+        estimatedPrice: Number((i.estimatedPrice * 0.85).toFixed(2))
+      }));
+      recalculatePlan(updatedItems);
+    }
+  };
+
+  const handleQuickAdjustGuests = (delta: number) => {
+    const currentGuests = plan.partySummary.guestCount || 12;
+    const newGuests = Math.max(2, currentGuests + delta);
+    const scale = newGuests / currentGuests;
+
+    const updatedItems = plan.items.map(i => ({
+      ...i,
+      estimatedPrice: Number((i.estimatedPrice * scale).toFixed(2)),
+      quantityDescription: i.quantityDescription.replace(/\d+\s*(guests|people)/i, `${newGuests} guests`)
+    }));
+
+    const updatedPartySummary = { ...plan.partySummary, guestCount: newGuests };
+    const essentialsTotal = updatedItems
+      .filter(i => i.isEnabled !== false && i.isEssential)
+      .reduce((sum, i) => sum + i.estimatedPrice, 0);
+    const optionalsTotal = updatedItems
+      .filter(i => i.isEnabled !== false && !i.isEssential)
+      .reduce((sum, i) => sum + i.estimatedPrice, 0);
+    const estimatedTotal = Number((essentialsTotal + optionalsTotal).toFixed(2));
+    const budget = plan.budget || 150;
+
+    onUpdatePlan({
+      ...plan,
+      partySummary: updatedPartySummary,
+      items: updatedItems,
+      essentialsTotal: Number(essentialsTotal.toFixed(2)),
+      optionalsTotal: Number(optionalsTotal.toFixed(2)),
+      estimatedTotal,
+      remainingBudget: Number((budget - estimatedTotal).toFixed(2)),
+      costPerGuest: Number((estimatedTotal / newGuests).toFixed(2))
+    });
+  };
+
+  const handleQuickAdjustBudget = (delta: number) => {
+    const currentBudget = plan.budget || 150;
+    const newBudget = Math.max(20, currentBudget + delta);
+    const remainingBudget = Number((newBudget - plan.estimatedTotal).toFixed(2));
+
+    onUpdatePlan({
+      ...plan,
+      budget: newBudget,
+      partySummary: { ...plan.partySummary, budget: newBudget },
+      remainingBudget
+    });
+  };
 
   // Filter items
   const filteredItems = plan.items.filter(item => {
@@ -164,35 +236,47 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
     window.print();
   };
 
+  const getCategoryIcon = (catName: string) => {
+    const lower = catName.toLowerCase();
+    if (lower.includes('food')) return <Utensils className="w-3.5 h-3.5 text-amber-600" />;
+    if (lower.includes('drink')) return <Wine className="w-3.5 h-3.5 text-blue-600" />;
+    if (lower.includes('decor')) return <Sparkle className="w-3.5 h-3.5 text-purple-600" />;
+    if (lower.includes('table')) return <Tag className="w-3.5 h-3.5 text-emerald-600" />;
+    return <ShoppingBag className="w-3.5 h-3.5 text-stone-600" />;
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header & Budget Gauge Card (Bento module) */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="bg-slate-900 text-white p-5 sm:p-6 border-b border-slate-800">
+      {/* Header & Budget Gauge Card (Editorial module) */}
+      <div className="bg-white rounded-3xl border border-stone-200/90 shadow-[0_4px_25px_-5px_rgba(0,0,0,0.04)] overflow-hidden">
+        {/* Top Hero Banner */}
+        <div className="bg-gradient-to-br from-stone-900 via-stone-900 to-amber-950 text-white p-5 sm:p-7 border-b border-stone-800">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <div className="flex items-center space-x-2 mb-1">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                  CymbalMart Tailored Plan
+              <div className="flex items-center space-x-2 mb-2">
+                <span className="px-2.5 py-0.5 rounded-full text-3xs font-bold uppercase tracking-widest bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                  CymbalMart Curated Plan
                 </span>
-                <span className="text-slate-400 text-xs font-mono">
+                <span className="text-stone-400 text-2xs font-mono-num">
                   {new Date(plan.createdAt || Date.now()).toLocaleDateString()}
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">{plan.title}</h1>
-              <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-xs sm:text-sm text-slate-300 mt-2">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-100 font-serif-luxury">
+                {plan.title}
+              </h2>
+              <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-xs sm:text-sm text-stone-300 mt-2">
                 <span className="flex items-center">
-                  <Users className="w-3.5 h-3.5 mr-1 text-indigo-400" />
+                  <Users className="w-3.5 h-3.5 mr-1 text-amber-400" />
                   {plan.partySummary.guestCount} Guests
                 </span>
-                <span>•</span>
+                <span className="text-stone-600">•</span>
                 <span className="flex items-center">
-                  <Calendar className="w-3.5 h-3.5 mr-1 text-indigo-400" />
+                  <Calendar className="w-3.5 h-3.5 mr-1 text-amber-400" />
                   {plan.partySummary.date}
                 </span>
-                <span>•</span>
+                <span className="text-stone-600">•</span>
                 <span className="flex items-center">
-                  <Palette className="w-3.5 h-3.5 mr-1 text-indigo-400" />
+                  <Palette className="w-3.5 h-3.5 mr-1 text-amber-400" />
                   {plan.partySummary.theme}
                 </span>
               </div>
@@ -202,120 +286,120 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setIsCheckoutOpen(true)}
-                className="inline-flex items-center px-4 py-2 text-xs sm:text-sm font-bold rounded-xl text-white bg-indigo-600 hover:bg-indigo-500 transition-all shadow-md active:scale-98"
+                className="inline-flex items-center px-4 py-2.5 text-xs sm:text-sm font-bold rounded-xl text-stone-950 bg-amber-400 hover:bg-amber-300 transition-all shadow-md active:scale-98"
               >
                 <CreditCard className="w-4 h-4 mr-1.5" />
-                Finalize & Checkout
+                Finalize & Reserve
               </button>
               <button
                 onClick={onOpenInStoreMode}
-                className="inline-flex items-center px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-200 bg-slate-800 hover:bg-slate-700 hover:text-white transition-colors border border-slate-700"
+                className="inline-flex items-center px-3.5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl text-stone-200 bg-stone-800 hover:bg-stone-700 hover:text-white transition-all border border-stone-700 active:scale-98"
               >
-                <Store className="w-4 h-4 mr-1.5 text-indigo-400" />
-                In-Store Mode
+                <Store className="w-4 h-4 mr-1.5 text-amber-400" />
+                In-Store Walk
               </button>
             </div>
           </div>
         </div>
 
         {/* Budget Variance & Metric Ribbon */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 border-b border-slate-200 bg-slate-50/70 text-center text-xs sm:text-sm">
+        <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-stone-100 border-b border-stone-200 bg-[#FAF9F6] text-center text-xs sm:text-sm">
           {/* Estimated Total */}
-          <div className="p-3.5 sm:p-4">
-            <div className="text-3xs uppercase tracking-widest font-bold text-slate-400 mb-0.5">
+          <div className="p-4 sm:p-5">
+            <div className="text-3xs uppercase tracking-widest font-bold text-stone-400 mb-1">
               Estimated Total
             </div>
-            <div className="text-lg sm:text-xl font-bold font-mono text-slate-900">
+            <div className="text-lg sm:text-2xl font-bold font-mono-num text-stone-900">
               ${plan.estimatedTotal.toFixed(2)}
             </div>
-            <div className="text-3xs text-slate-500">
-              {activeItems.length} active items
+            <div className="text-3xs text-stone-500 mt-0.5">
+              {activeItems.length} active products
             </div>
           </div>
 
           {/* Budget Limit */}
-          <div className="p-3.5 sm:p-4">
-            <div className="text-3xs uppercase tracking-widest font-bold text-slate-400 mb-0.5">
+          <div className="p-4 sm:p-5">
+            <div className="text-3xs uppercase tracking-widest font-bold text-stone-400 mb-1">
               Target Budget
             </div>
-            <div className="text-lg sm:text-xl font-bold font-mono text-slate-700">
+            <div className="text-lg sm:text-2xl font-bold font-mono-num text-stone-700">
               ${plan.budget?.toFixed(2) || '0.00'}
             </div>
-            <div className="text-3xs text-slate-500">
+            <div className="text-3xs text-stone-500 mt-0.5">
               Allocated ceiling
             </div>
           </div>
 
           {/* Budget Variance */}
-          <div className="p-3.5 sm:p-4">
-            <div className="text-3xs uppercase tracking-widest font-bold text-slate-400 mb-0.5">
+          <div className="p-4 sm:p-5">
+            <div className="text-3xs uppercase tracking-widest font-bold text-stone-400 mb-1">
               Budget Status
             </div>
-            <div className={`text-lg sm:text-xl font-bold font-mono flex items-center justify-center ${
-              isOverBudget ? 'text-rose-600' : 'text-emerald-600'
+            <div className={`text-lg sm:text-2xl font-bold font-mono-num flex items-center justify-center ${
+              isOverBudget ? 'text-rose-600' : 'text-emerald-700'
             }`}>
               {isOverBudget ? `-$${Math.abs(budgetVariance).toFixed(2)}` : `+$${budgetVariance.toFixed(2)}`}
             </div>
-            <div className={`text-3xs font-medium ${isOverBudget ? 'text-rose-600' : 'text-emerald-600'}`}>
-              {isOverBudget ? 'Above target budget' : 'Under budget (Safe)'}
+            <div className={`text-3xs font-semibold ${isOverBudget ? 'text-rose-600' : 'text-emerald-700'}`}>
+              {isOverBudget ? 'Above target limit' : 'Under budget (Balanced)'}
             </div>
           </div>
 
           {/* Cost per Guest */}
-          <div className="p-3.5 sm:p-4">
-            <div className="text-3xs uppercase tracking-widest font-bold text-slate-400 mb-0.5">
+          <div className="p-4 sm:p-5">
+            <div className="text-3xs uppercase tracking-widest font-bold text-stone-400 mb-1">
               Cost Per Guest
             </div>
-            <div className="text-lg sm:text-xl font-bold font-mono text-slate-900">
+            <div className="text-lg sm:text-2xl font-bold font-mono-num text-stone-900">
               ${plan.costPerGuest.toFixed(2)}
             </div>
-            <div className="text-3xs text-slate-500">
+            <div className="text-3xs text-stone-500 mt-0.5">
               For {plan.partySummary.guestCount} attendees
             </div>
           </div>
         </div>
 
-        {/* Breakdown of Essentials vs Optionals & Progress bar */}
+        {/* Breakdown of Essentials vs Optionals */}
         <div className="p-4 sm:p-5 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-          <div className="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-start">
-            <div className="flex items-center space-x-1.5">
+          <div className="flex items-center space-x-5 w-full sm:w-auto justify-between sm:justify-start">
+            <div className="flex items-center space-x-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
-              <span className="font-medium text-slate-600">Essentials:</span>
-              <span className="font-bold font-mono text-slate-900">${plan.essentialsTotal.toFixed(2)}</span>
+              <span className="font-semibold text-stone-600">Essentials:</span>
+              <span className="font-bold font-mono-num text-stone-900">${plan.essentialsTotal.toFixed(2)}</span>
             </div>
-            <div className="flex items-center space-x-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
-              <span className="font-medium text-slate-600">Optionals:</span>
-              <span className="font-bold font-mono text-indigo-600">${plan.optionalsTotal.toFixed(2)}</span>
+            <div className="flex items-center space-x-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+              <span className="font-semibold text-stone-600">Optionals:</span>
+              <span className="font-bold font-mono-num text-amber-800">${plan.optionalsTotal.toFixed(2)}</span>
             </div>
           </div>
 
           {/* Quick budget tips */}
           {isOverBudget && (
-            <div className="text-xs text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 flex items-center">
+            <div className="text-2xs text-amber-900 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 flex items-center">
               <AlertCircle className="w-3.5 h-3.5 mr-1.5 shrink-0 text-amber-600" />
-              Tip: Toggle off optional items below to trim ${plan.optionalsTotal.toFixed(2)}!
+              Tip: Toggle off optional items below to save ${plan.optionalsTotal.toFixed(2)}!
             </div>
           )}
         </div>
       </div>
 
-      {/* Assumptions Bento Card */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+      {/* Assumptions Card */}
+      <div className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs overflow-hidden">
         <button
           onClick={() => setShowAssumptions(!showAssumptions)}
-          className="w-full p-4 sm:px-6 bg-slate-50/80 hover:bg-slate-100/80 flex items-center justify-between text-left transition-colors border-b border-slate-100"
+          className="w-full p-4 sm:px-6 bg-[#FAF9F6] hover:bg-stone-100 flex items-center justify-between text-left transition-colors border-b border-stone-200/70"
         >
-          <div className="flex items-center space-x-2.5">
-            <div className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+          <div className="flex items-center space-x-3">
+            <div className="w-7 h-7 rounded-lg bg-stone-900 text-amber-300 flex items-center justify-center font-bold text-xs">
               <Info className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-xs sm:text-sm text-slate-800">Planning Assumptions & Calculation Logic</h3>
-              <p className="text-2xs text-slate-500">Transparent grocery formulas for drink counts, food portions & tableware</p>
+              <h3 className="font-bold text-xs sm:text-sm text-stone-900">Planning Assumptions & Portions Formula</h3>
+              <p className="text-2xs text-stone-500">Transparent grocery scaling logic for drink multipliers, finger food & tableware</p>
             </div>
           </div>
-          <div className="text-slate-400">
+          <div className="text-stone-400">
             {showAssumptions ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
         </button>
@@ -324,33 +408,33 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
           <div className="p-4 sm:p-6 space-y-4 bg-white text-xs sm:text-sm">
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               {plan.assumptions.map((assumption, idx) => (
-                <li key={idx} className="flex items-start space-x-2 p-3 rounded-2xl bg-indigo-50/40 border border-indigo-100 text-slate-800">
-                  <CheckCircle className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                <li key={idx} className="flex items-start space-x-2.5 p-3 rounded-xl bg-stone-50 border border-stone-200/80 text-stone-800">
+                  <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                   <span className="text-xs leading-relaxed">{assumption}</span>
                 </li>
               ))}
             </ul>
 
             {/* Dietary & Theme Highlights */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3 border-t border-slate-100 text-xs">
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-                <div className="font-bold text-slate-800 flex items-center mb-1">
-                  <Palette className="w-3.5 h-3.5 mr-1 text-indigo-600" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3 border-t border-stone-100 text-xs">
+              <div className="p-3.5 rounded-xl bg-[#FAF9F6] border border-stone-200/70">
+                <div className="font-bold text-stone-900 flex items-center mb-1">
+                  <Palette className="w-3.5 h-3.5 mr-1.5 text-amber-600" />
                   Theme Integration ({plan.partySummary.theme})
                 </div>
-                <ul className="list-disc list-inside space-y-1 text-slate-600 text-2xs sm:text-xs">
+                <ul className="list-disc list-inside space-y-1 text-stone-600 text-2xs sm:text-xs">
                   {plan.themeHighlights.map((h, i) => (
                     <li key={i}>{h}</li>
                   ))}
                 </ul>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-                <div className="font-bold text-slate-800 flex items-center mb-1">
-                  <ShieldCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+              <div className="p-3.5 rounded-xl bg-[#FAF9F6] border border-stone-200/70">
+                <div className="font-bold text-stone-900 flex items-center mb-1">
+                  <ShieldCheck className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
                   Dietary Accommodations ({plan.partySummary.dietaryRestrictions?.join(', ') || 'Standard'})
                 </div>
-                <ul className="list-disc list-inside space-y-1 text-slate-600 text-2xs sm:text-xs">
+                <ul className="list-disc list-inside space-y-1 text-stone-600 text-2xs sm:text-xs">
                   {plan.dietaryAccommodations.map((d, i) => (
                     <li key={i}>{d}</li>
                   ))}
@@ -361,32 +445,106 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
         )}
       </div>
 
-      {/* Shopping List Section (Bento module) */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-5 sm:p-6 space-y-4">
+      {/* Shopping List Section (Curated Aisle List) */}
+      <div className="bg-white rounded-3xl border border-stone-200/90 shadow-[0_4px_25px_-5px_rgba(0,0,0,0.04)] p-5 sm:p-6 space-y-5">
+        {/* Stage 3: Refine Action Toolbar */}
+        <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/80">
+          <div className="flex items-center justify-between mb-2.5">
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <span className="text-xs font-bold text-stone-900 uppercase tracking-wider">
+                Stage 3 Refine Studio
+              </span>
+            </div>
+            <span className="text-3xs text-stone-400 font-medium">Real-time recalculation of quantities & totals</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleQuickReduceCost}
+              className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors shadow-2xs active:scale-98"
+            >
+              <TrendingDown className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+              💰 Trim Budget (Auto-Reduce)
+            </button>
+
+            <button
+              onClick={onOpenAddItemModal}
+              className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-stone-900 text-white hover:bg-stone-800 transition-colors shadow-2xs active:scale-98"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1 text-amber-300" />
+              ➕ Add Custom Item
+            </button>
+
+            {/* Guest count adjusters */}
+            <div className="inline-flex items-center rounded-xl bg-white border border-stone-200/90 p-0.5 shadow-2xs text-xs">
+              <span className="px-2.5 text-stone-500 font-medium flex items-center">
+                <Users className="w-3 h-3 mr-1 text-stone-400" />
+                Guests ({plan.partySummary.guestCount || 12}):
+              </span>
+              <button
+                onClick={() => handleQuickAdjustGuests(-2)}
+                className="px-2 py-0.5 rounded-lg hover:bg-stone-100 font-bold text-stone-700 active:scale-95"
+                title="Decrease 2 guests"
+              >
+                -2
+              </button>
+              <button
+                onClick={() => handleQuickAdjustGuests(5)}
+                className="px-2 py-0.5 rounded-lg hover:bg-stone-100 font-bold text-amber-700 active:scale-95"
+                title="Add 5 guests"
+              >
+                +5
+              </button>
+            </div>
+
+            {/* Budget adjusters */}
+            <div className="inline-flex items-center rounded-xl bg-white border border-stone-200/90 p-0.5 shadow-2xs text-xs">
+              <span className="px-2.5 text-stone-500 font-medium flex items-center">
+                <DollarSign className="w-3 h-3 mr-1 text-stone-400" />
+                Budget (${plan.budget || 150}):
+              </span>
+              <button
+                onClick={() => handleQuickAdjustBudget(-25)}
+                className="px-2 py-0.5 rounded-lg hover:bg-stone-100 font-bold text-stone-700 active:scale-95"
+                title="Decrease $25"
+              >
+                -$25
+              </button>
+              <button
+                onClick={() => handleQuickAdjustBudget(50)}
+                className="px-2 py-0.5 rounded-lg hover:bg-stone-100 font-bold text-emerald-700 active:scale-95"
+                title="Add $50"
+              >
+                +$50
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Filter and Action Bar */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3 border-b border-slate-100">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pb-3 border-b border-stone-100">
           {/* Category & Essential Filter Tabs */}
           <div className="flex flex-wrap items-center gap-2">
-            {/* Category dropdown / pills */}
             <div className="flex items-center space-x-1.5 overflow-x-auto no-scrollbar py-1">
               <button
                 onClick={() => setSelectedCategory('all')}
-                className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors whitespace-nowrap ${
+                className={`px-3.5 py-1 text-xs font-semibold rounded-xl transition-all whitespace-nowrap ${
                   selectedCategory === 'all'
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    ? 'bg-stone-900 text-white shadow-2xs'
+                    : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                 }`}
               >
-                All Categories ({plan.items.length})
+                All Aisles ({plan.items.length})
               </button>
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3 py-1 text-xs font-medium rounded-full transition-colors whitespace-nowrap ${
+                  className={`px-3 py-1 text-xs font-medium rounded-xl transition-all whitespace-nowrap ${
                     selectedCategory === cat
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      ? 'bg-stone-900 text-white shadow-2xs'
+                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
                   }`}
                 >
                   {cat}
@@ -395,22 +553,22 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
             </div>
 
             {/* Essential vs Optional Filter */}
-            <div className="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-full border border-slate-200 text-xs">
+            <div className="flex items-center space-x-1 bg-stone-100 p-0.5 rounded-xl border border-stone-200/80 text-xs">
               <button
                 onClick={() => setFilterType('all')}
-                className={`px-3 py-0.5 rounded-full font-medium ${filterType === 'all' ? 'bg-white shadow-2xs text-slate-900' : 'text-slate-600'}`}
+                className={`px-2.5 py-0.5 rounded-lg font-medium transition-all ${filterType === 'all' ? 'bg-white shadow-2xs text-stone-900' : 'text-stone-600'}`}
               >
                 All
               </button>
               <button
                 onClick={() => setFilterType('essential')}
-                className={`px-3 py-0.5 rounded-full font-medium ${filterType === 'essential' ? 'bg-white shadow-2xs text-indigo-700' : 'text-slate-600'}`}
+                className={`px-2.5 py-0.5 rounded-lg font-medium transition-all ${filterType === 'essential' ? 'bg-white shadow-2xs text-emerald-800' : 'text-stone-600'}`}
               >
                 Essentials
               </button>
               <button
                 onClick={() => setFilterType('optional')}
-                className={`px-3 py-0.5 rounded-full font-medium ${filterType === 'optional' ? 'bg-white shadow-2xs text-slate-800' : 'text-slate-600'}`}
+                className={`px-2.5 py-0.5 rounded-lg font-medium transition-all ${filterType === 'optional' ? 'bg-white shadow-2xs text-amber-800' : 'text-stone-600'}`}
               >
                 Optionals
               </button>
@@ -420,26 +578,19 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
           {/* Action Tools */}
           <div className="flex items-center space-x-2">
             <button
-              onClick={onOpenAddItemModal}
-              className="inline-flex items-center px-3.5 py-1.5 text-xs font-semibold rounded-full text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-2xs"
-            >
-              <Plus className="w-3.5 h-3.5 mr-1" />
-              Add Item
-            </button>
-            <button
               onClick={handleCopyList}
-              className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full text-slate-700 bg-white hover:bg-slate-100 transition-colors border border-slate-200 shadow-2xs"
+              className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-xl text-stone-700 bg-white hover:bg-stone-50 transition-colors border border-stone-200 shadow-2xs active:scale-98"
               title="Copy formatted list"
             >
-              <Copy className="w-3.5 h-3.5 mr-1 text-slate-500" />
+              <Copy className="w-3.5 h-3.5 mr-1.5 text-stone-400" />
               {copiedNotification ? "Copied!" : "Copy"}
             </button>
             <button
               onClick={handlePrint}
-              className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full text-slate-700 bg-white hover:bg-slate-100 transition-colors border border-slate-200 shadow-2xs"
+              className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-xl text-stone-700 bg-white hover:bg-stone-50 transition-colors border border-stone-200 shadow-2xs active:scale-98"
               title="Print shopping list"
             >
-              <Printer className="w-3.5 h-3.5 mr-1 text-slate-500" />
+              <Printer className="w-3.5 h-3.5 mr-1.5 text-stone-400" />
               Print
             </button>
           </div>
@@ -460,21 +611,21 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
               return (
                 <div key={categoryName} className="space-y-2">
                   {/* Category Header */}
-                  <div className="flex items-center justify-between py-1 border-b border-slate-100">
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center">
-                      <ShoppingBag className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
-                      {categoryName}
-                      <span className="ml-2 px-2 py-0.5 rounded-full text-3xs font-medium bg-slate-100 text-slate-600">
-                        {itemsInCat.length} items
+                  <div className="flex items-center justify-between py-1 border-b border-stone-100">
+                    <h4 className="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center">
+                      {getCategoryIcon(categoryName)}
+                      <span className="ml-1.5 text-stone-800">{categoryName}</span>
+                      <span className="ml-2 px-2 py-0.5 rounded-full text-3xs font-semibold bg-stone-100 text-stone-600 font-mono-num">
+                        {itemsInCat.length} products
                       </span>
                     </h4>
-                    <span className="text-xs font-bold font-mono text-slate-700">
+                    <span className="text-xs font-bold font-mono-num text-stone-800">
                       Subtotal: ${catTotal.toFixed(2)}
                     </span>
                   </div>
 
-                  {/* Category Items Table / Bento Rows */}
-                  <div className="divide-y divide-slate-100 border border-slate-200/90 rounded-2xl overflow-hidden bg-white">
+                  {/* Category Items Table */}
+                  <div className="divide-y divide-stone-100 border border-stone-200/90 rounded-2xl overflow-hidden bg-white shadow-2xs">
                     {itemsInCat.map(item => {
                       const isEnabled = item.isEnabled !== false;
                       const isChecked = item.isChecked;
@@ -482,12 +633,12 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
                       return (
                         <div
                           key={item.id}
-                          className={`p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors ${
+                          className={`p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors ${
                             !isEnabled
-                              ? 'bg-slate-50/70 opacity-60'
+                              ? 'bg-stone-50/70 opacity-60'
                               : isChecked
-                              ? 'bg-indigo-50/30'
-                              : 'hover:bg-slate-50/80'
+                              ? 'bg-amber-50/20'
+                              : 'hover:bg-stone-50/60'
                           }`}
                         >
                           {/* Left: Checkbox + Name + Quantity + Badges */}
@@ -496,10 +647,10 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
                             <button
                               type="button"
                               onClick={() => toggleItemChecked(item.id)}
-                              className={`w-5 h-5 rounded-md border flex items-center justify-center mt-0.5 transition-colors ${
+                              className={`w-5 h-5 rounded-lg border flex items-center justify-center mt-0.5 transition-all ${
                                 isChecked
-                                  ? 'bg-indigo-600 border-indigo-600 text-white'
-                                  : 'border-slate-300 bg-white hover:border-indigo-500 text-transparent'
+                                  ? 'bg-stone-900 border-stone-900 text-amber-400 shadow-2xs'
+                                  : 'border-stone-300 bg-white hover:border-amber-500 text-transparent'
                               }`}
                               title={isChecked ? "Mark as unpurchased" : "Mark as purchased"}
                             >
@@ -509,44 +660,50 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
                             <div className="flex-1 min-w-0">
                               <div className="flex flex-wrap items-center gap-1.5 mb-1">
                                 <span className={`font-semibold text-xs sm:text-sm ${
-                                  isChecked ? 'line-through text-slate-400' : 'text-slate-900'
+                                  isChecked ? 'line-through text-stone-400' : 'text-stone-900'
                                 }`}>
                                   {item.name}
                                 </span>
 
                                 {/* Essential vs Optional Tag */}
                                 {item.isEssential ? (
-                                  <span className="px-1.5 py-0.5 rounded text-3xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                  <span className="px-1.5 py-0.5 rounded-md text-3xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                                     ESSENTIAL
                                   </span>
                                 ) : (
-                                  <span className="px-1.5 py-0.5 rounded text-3xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                                  <span className="px-1.5 py-0.5 rounded-md text-3xs font-bold bg-stone-100 text-stone-600 border border-stone-200">
                                     OPTIONAL
                                   </span>
                                 )}
 
                                 {/* Aisle Location */}
                                 {item.cymbalMartAisle && (
-                                  <span className="px-1.5 py-0.5 rounded text-3xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                  <span className="px-2 py-0.5 rounded-md text-3xs font-medium bg-[#FAF9F6] text-stone-600 border border-stone-200/80 flex items-center">
+                                    <MapPin className="w-2.5 h-2.5 mr-1 text-stone-400" />
                                     {item.cymbalMartAisle}
                                   </span>
                                 )}
 
                                 {/* Dietary Note */}
                                 {item.dietaryNote && (
-                                  <span className="px-1.5 py-0.5 rounded text-3xs font-medium bg-orange-50 text-orange-700 border border-orange-200">
+                                  <span className="px-2 py-0.5 rounded-md text-3xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
                                     {item.dietaryNote}
                                   </span>
                                 )}
                               </div>
 
-                              {/* Quantity & Sizing Calculation */}
-                              <div className="text-xs text-slate-600 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                                <span className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 text-xs">
+                              {/* Quantity & Unit Price Calculation */}
+                              <div className="text-xs text-stone-600 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                                <span className="font-semibold text-amber-900 bg-amber-50/80 px-2 py-0.5 rounded-md border border-amber-200/60 text-2xs">
                                   Qty: {item.quantityDescription}
                                 </span>
+                                {item.unitPrice && (
+                                  <span className="text-2xs font-mono-num text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded">
+                                    ${item.unitPrice.toFixed(2)} / unit
+                                  </span>
+                                )}
                                 {item.themeRelevance && (
-                                  <span className="text-slate-500 italic text-2xs">
+                                  <span className="text-stone-500 italic text-2xs">
                                     • {item.themeRelevance}
                                   </span>
                                 )}
@@ -554,19 +711,19 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
 
                               {/* Custom Item Notes */}
                               {item.notes && (
-                                <p className="text-3xs text-slate-400 mt-0.5">{item.notes}</p>
+                                <p className="text-3xs text-stone-400 mt-0.5">{item.notes}</p>
                               )}
                             </div>
                           </div>
 
                           {/* Right: Estimated Price + Replace + Enable Toggle + Delete */}
                           <div className="flex items-center justify-between sm:justify-end space-x-2.5 self-end sm:self-center pl-8 sm:pl-0">
-                            <div className="text-right mr-1">
-                              <div className="font-bold font-mono text-sm text-slate-900">
+                            <div className="text-right mr-1.5">
+                              <div className="font-bold font-mono-num text-sm text-stone-900">
                                 ${item.estimatedPrice.toFixed(2)}
                               </div>
-                              <div className="text-3xs text-slate-400">
-                                {isEnabled ? 'In total' : 'Excluded'}
+                              <div className="text-3xs text-stone-400">
+                                {isEnabled ? 'Subtotal' : 'Excluded'}
                               </div>
                             </div>
 
@@ -574,21 +731,21 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
                             <button
                               type="button"
                               onClick={() => setItemToReplace(item)}
-                              className="inline-flex items-center px-2 py-1 rounded-full text-2xs font-semibold bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 border border-slate-200 transition-colors"
+                              className="inline-flex items-center px-2.5 py-1 rounded-lg text-2xs font-semibold bg-stone-100 hover:bg-amber-50 hover:text-amber-900 text-stone-700 border border-stone-200 transition-colors active:scale-95"
                               title="Replace or swap product"
                             >
-                              <ArrowLeftRight className="w-3 h-3 mr-1 text-slate-500" />
-                              Replace
+                              <ArrowLeftRight className="w-3 h-3 mr-1 text-stone-400" />
+                              Swap
                             </button>
 
                             {/* Enable/Disable Toggle for Optional/Any items */}
                             <button
                               type="button"
                               onClick={() => toggleItemEnabled(item.id)}
-                              className={`px-2.5 py-1 rounded-full text-2xs font-semibold transition-colors ${
+                              className={`px-2.5 py-1 rounded-lg text-2xs font-semibold transition-all active:scale-95 ${
                                 isEnabled
-                                  ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
-                                  : 'bg-indigo-600 text-white shadow-2xs'
+                                  ? 'bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200'
+                                  : 'bg-stone-900 text-white shadow-2xs'
                               }`}
                               title={isEnabled ? "Exclude from total" : "Include in total"}
                             >
@@ -599,7 +756,7 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
                             <button
                               type="button"
                               onClick={() => deleteItem(item.id)}
-                              className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-slate-100 transition-colors"
+                              className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
                               title="Remove item"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -615,15 +772,17 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
         </div>
 
         {/* Bottom Finalize & Checkout Callout */}
-        <div className="mt-6 p-4 sm:p-5 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
-          <div className="flex items-center space-x-3 text-center sm:text-left">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
-              <ShoppingBag className="w-5 h-5" />
+        <div className="mt-8 p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-stone-900 via-stone-900 to-amber-950 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+          <div className="flex items-center space-x-3.5 text-center sm:text-left">
+            <div className="w-12 h-12 rounded-2xl bg-amber-400 text-stone-950 flex items-center justify-center shrink-0 shadow-md">
+              <ShoppingBag className="w-6 h-6" />
             </div>
             <div>
-              <div className="font-bold text-sm sm:text-base">Ready for CymbalMart Checkout?</div>
-              <div className="text-2xs text-slate-300">
-                {plan.items.filter(i => i.isEnabled !== false).length} items selected • Estimated Total: ${plan.estimatedTotal.toFixed(2)}
+              <div className="font-bold text-base sm:text-lg font-serif-luxury text-stone-100">
+                Ready for CymbalMart Curbside or Delivery?
+              </div>
+              <div className="text-2xs text-stone-300">
+                {plan.items.filter(i => i.isEnabled !== false).length} items confirmed • Total: ${plan.estimatedTotal.toFixed(2)}
               </div>
             </div>
           </div>
@@ -631,22 +790,22 @@ export const ShoppingPlanView: React.FC<ShoppingPlanViewProps> = ({
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setIsCheckoutOpen(true)}
-              className="px-5 py-2.5 text-xs sm:text-sm font-bold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-sm flex items-center"
+              className="px-6 py-3 text-xs sm:text-sm font-bold rounded-xl text-stone-950 bg-amber-400 hover:bg-amber-300 transition-all shadow-md flex items-center active:scale-98"
             >
               <span>Finalize Shopping Plan</span>
-              <ArrowRight className="w-4 h-4 ml-1.5 text-indigo-600" />
+              <ArrowRight className="w-4 h-4 ml-1.5" />
             </button>
           </div>
         </div>
 
-        {/* Pro Tips Bento Box */}
+        {/* Host Pro Tips Box */}
         {plan.proTips && plan.proTips.length > 0 && (
-          <div className="mt-6 p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-950">
-            <h5 className="font-bold text-xs flex items-center mb-1.5 text-amber-900">
-              <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-600" />
+          <div className="mt-6 p-4 rounded-2xl bg-[#FAF9F6] border border-stone-200/90 text-stone-800">
+            <h5 className="font-bold text-xs flex items-center mb-1.5 text-stone-900">
+              <Sparkles className="w-3.5 h-3.5 mr-1.5 text-amber-600" />
               CymbalMart Host Pro Tips
             </h5>
-            <ul className="space-y-1 text-xs text-amber-900 list-disc list-inside">
+            <ul className="space-y-1 text-2xs sm:text-xs text-stone-600 list-disc list-inside">
               {plan.proTips.map((tip, idx) => (
                 <li key={idx}>{tip}</li>
               ))}

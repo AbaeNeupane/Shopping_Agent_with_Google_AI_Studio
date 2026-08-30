@@ -25,8 +25,10 @@ import {
   ShoppingPlan, 
   ChatMessage, 
   QuickTheme, 
-  ShoppingItem 
+  ShoppingItem,
+  WorkflowStage
 } from './types';
+import { StageProgressBar } from './components/StageProgressBar';
 import { 
   Sparkles, 
   MessageSquare, 
@@ -66,6 +68,7 @@ export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_GREETING_MESSAGE]);
   const [currentPlan, setCurrentPlan] = useState<ShoppingPlan | null>(null);
   const [activeTab, setActiveTab] = useState<'chat' | 'plan'>('chat');
+  const [workflowStage, setWorkflowStage] = useState<WorkflowStage>('define');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
   // Modals
@@ -93,7 +96,8 @@ export default function App() {
           messages: [...messages, userMsg],
           partyDetails,
           userMessage: text,
-          forceGeneratePlan: forcePlan
+          forceGeneratePlan: forcePlan,
+          currentStage: workflowStage
         })
       });
 
@@ -101,6 +105,10 @@ export default function App() {
 
       if (data.extractedDetails) {
         setPartyDetails((prev) => ({ ...prev, ...data.extractedDetails }));
+      }
+
+      if (data.stage) {
+        setWorkflowStage(data.stage);
       }
 
       if (data.shoppingPlan) {
@@ -136,6 +144,20 @@ export default function App() {
   // Quick reply click
   const handleSelectQuickReply = (reply: string) => {
     handleSendMessage(reply);
+  };
+
+  // Stage selection via progress bar
+  const handleSelectStage = (stage: WorkflowStage) => {
+    setWorkflowStage(stage);
+    if (stage === 'define') {
+      setActiveTab('chat');
+    } else if (stage === 'review' || stage === 'refine' || stage === 'finalize') {
+      if (currentPlan) {
+        setActiveTab('plan');
+      } else {
+        handleSendMessage("Generate shopping list based on current party details", true);
+      }
+    }
   };
 
   // Manual Trigger to generate/update shopping plan directly
@@ -246,6 +268,13 @@ export default function App() {
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+        {/* Stage 1-4 Guided Workflow Progress Bar */}
+        <StageProgressBar
+          currentStage={workflowStage}
+          onSelectStage={handleSelectStage}
+          hasPlan={!!currentPlan}
+        />
+
         {/* 7-Factor Party Parameters Card */}
         <PartyParametersCard
           partyDetails={partyDetails}
