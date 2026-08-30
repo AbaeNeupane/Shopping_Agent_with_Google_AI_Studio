@@ -2,6 +2,28 @@ import { QuickTheme } from '../types';
 
 export const PARTY_PRESETS: QuickTheme[] = [
   {
+    name: "Kids Superhero Birthday Bash",
+    type: "Children's Birthday Party",
+    description: "Child-friendly mini pizza bites, bakery superhero cupcakes, organic juice pouches, fresh fruit skewers, superhero cape/mask favors, and action hero decor.",
+    defaultGuests: 14,
+    defaultBudget: 150,
+    iconName: "Shield",
+    suggestedTheme: "Superhero Comic Adventure",
+    dietarySuggestions: ["Nut Allergy"],
+    specialRequests: "100% nut-free cupcakes, spill-proof cups, sticky-finger wet wipes, and superhero action hero favors"
+  },
+  {
+    name: "Corporate Team-Building Workshop",
+    type: "Corporate Team Building Event",
+    description: "Artisan gourmet wrap platters, cold brew & tea station, sparkling waters, sleek eco tableware, Post-It easel pads, Sharpies, and team icebreaker kits.",
+    defaultGuests: 18,
+    defaultBudget: 260,
+    iconName: "Briefcase",
+    suggestedTheme: "Professional Innovation & Strategy",
+    dietarySuggestions: ["Gluten-Free", "Vegetarian"],
+    specialRequests: "Gourmet wrap platter (with GF & veggie options), cold brew station, Sharpies, Post-it easel pads, and desk hand sanitizer"
+  },
+  {
     name: "Tropical Luau Birthday",
     type: "Birthday Party",
     description: "Island vibes with fresh pineapple skewers, teriyaki sliders, sparkling tropical punch, and festive tiki tableware.",
@@ -21,18 +43,7 @@ export const PARTY_PRESETS: QuickTheme[] = [
     iconName: "Flame",
     suggestedTheme: "Rustic Summer BBQ",
     dietarySuggestions: ["Vegetarian"],
-    specialRequests: "Plant-based burger option, extra ice for beer/seltzer cooler, and wet wipes"
-  },
-  {
-    name: "Kids Superhero Bash",
-    type: "Kids Birthday",
-    description: "Colorful superhero cupcakes, finger pizzas, organic juice boxes, fresh berries, and superhero party favor masks.",
-    defaultGuests: 14,
-    defaultBudget: 140,
-    iconName: "Shield",
-    suggestedTheme: "Superhero Comic Adventure",
-    dietarySuggestions: ["Nut Allergy"],
-    specialRequests: "100% nut-free certified cupcakes, spill-proof cups, and superhero colored napkins"
+    specialRequests: "Plant-based burger option, extra ice for cooler, and wet wipes"
   },
   {
     name: "Taco Fiesta & Game Night",
@@ -46,7 +57,7 @@ export const PARTY_PRESETS: QuickTheme[] = [
     specialRequests: "Corn and flour tortillas, 3 varieties of salsa (mild, medium, fiery), and finger-friendly snacks"
   },
   {
-    name: "Elegant Cocktail & Tapas Soirée",
+    name: "Executive Cocktail & Tapas Soirée",
     type: "Cocktail Party",
     description: "Artisan charcuterie boards, imported cheeses, gourmet crackers, citrus garnishes, tonic waters, and clear stemless glasses.",
     defaultGuests: 12,
@@ -69,13 +80,25 @@ export const COMMON_DIETARY_OPTIONS = [
   "Low Sugar"
 ];
 
+export const COMMON_PARTY_TYPES = [
+  "Children's Birthday Party",
+  "Corporate Team Building Event",
+  "Birthday Party",
+  "Backyard BBQ",
+  "Cocktail Party",
+  "Game Night",
+  "Graduation Celebration",
+  "Dinner Party"
+];
+
 export const COMMON_THEMES = [
+  "Superhero Comic Adventure",
+  "Professional Innovation & Strategy",
   "Tropical Luau",
   "Rustic Summer BBQ",
   "Fiesta Taco Bar",
   "Retro 80s Disco",
-  "Superhero Adventure",
-  "Elegant Gold & White",
+  "Elegant Gold & Slate",
   "Tailgate & Game Day",
   "Garden Tea Party",
   "Cozy Movie & Popcorn Night"

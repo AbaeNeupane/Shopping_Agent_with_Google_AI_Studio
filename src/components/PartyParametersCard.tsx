@@ -17,7 +17,7 @@ import {
   PartyPopper
 } from 'lucide-react';
 import { PartyDetails } from '../types';
-import { COMMON_DIETARY_OPTIONS } from '../data/presets';
+import { COMMON_DIETARY_OPTIONS, COMMON_PARTY_TYPES, COMMON_THEMES } from '../data/presets';
 
 interface PartyParametersCardProps {
   partyDetails: PartyDetails;
@@ -299,11 +299,17 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
               <label className="block text-2xs font-bold uppercase tracking-wider text-stone-600 mb-1">1. Party Type</label>
               <input
                 type="text"
+                list="party-types-list"
                 value={editForm.partyType}
                 onChange={(e) => setEditForm({ ...editForm, partyType: e.target.value })}
-                placeholder="e.g. Birthday Party, BBQ, Cocktail Night"
+                placeholder="e.g. Children's Birthday Party, Corporate Event"
                 className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-stone-50/50"
               />
+              <datalist id="party-types-list">
+                {COMMON_PARTY_TYPES.map((pt) => (
+                  <option key={pt} value={pt} />
+                ))}
+              </datalist>
             </div>
 
             <div>
@@ -347,11 +353,17 @@ export const PartyParametersCard: React.FC<PartyParametersCardProps> = ({
               <label className="block text-2xs font-bold uppercase tracking-wider text-stone-600 mb-1">5. Party Theme</label>
               <input
                 type="text"
+                list="party-themes-list"
                 value={editForm.theme}
                 onChange={(e) => setEditForm({ ...editForm, theme: e.target.value })}
-                placeholder="e.g. Retro Disco Glam, Tropical Tiki Luau, Taco Fiesta"
+                placeholder="e.g. Superhero Comic Adventure, Professional Innovation, Luau"
                 className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 bg-stone-50/50"
               />
+              <datalist id="party-themes-list">
+                {COMMON_THEMES.map((th) => (
+                  <option key={th} value={th} />
+                ))}
+              </datalist>
             </div>
           </div>
 
